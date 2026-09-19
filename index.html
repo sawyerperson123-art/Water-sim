@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#07151f" />
+  <title>Drift — Water simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#eaf8f7;--muted:#9ab7bb;--line:#ffffff1c;--glass:#071c27b5;--accent:#63e1cf}
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:#06131c;color:var(--ink);font-family:Manrope,system-ui,sans-serif} body{overflow:hidden}
+    canvas{display:block;position:fixed;inset:0;width:100%;height:100%;cursor:crosshair}
+    .grain{position:fixed;inset:0;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+    header{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:28px 38px;z-index:2} .brand{display:flex;align-items:center;gap:12px;font-weight:600;letter-spacing:.05em;font-size:14px}.mark{width:28px;height:28px;border:1px solid #70e4d7aa;border-radius:50% 50% 50% 8px;transform:rotate(45deg);display:grid;place-items:center}.mark:after{content:'';width:9px;height:9px;border-radius:50%;background:var(--accent)}
+    .status{font:11px 'DM Mono',monospace;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px}.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+    .intro{position:fixed;left:38px;top:24%;z-index:1;pointer-events:none;max-width:420px}.eyebrow{font:11px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}.intro h1{font-size:clamp(44px,6vw,84px);line-height:.95;letter-spacing:-.07em;margin:0 0 22px;font-weight:500}.intro p{color:var(--muted);font-size:14px;line-height:1.7;max-width:315px;margin:0}.hint{margin-top:30px;font:11px 'DM Mono',monospace;color:#d9faf3a8;letter-spacing:.08em}
+    .panel{position:fixed;right:28px;bottom:28px;width:245px;padding:21px 20px;border:1px solid var(--line);background:linear-gradient(140deg,#123847b8,#06151eb8);backdrop-filter:blur(18px);border-radius:14px;z-index:2;box-shadow:0 18px 55px #0005}.panel-title{font:10px 'DM Mono',monospace;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:17px}.control{margin:15px 0}.row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#d5e7e8;margin-bottom:9px}.value{font:11px 'DM Mono',monospace;color:var(--accent)}input[type=range]{appearance:none;width:100%;height:2px;background:#ffffff2b;outline:none;border-radius:5px}input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid #08212a;box-shadow:0 0 0 1px var(--accent);cursor:pointer}.buttons{display:flex;gap:8px;margin-top:19px}button{border:1px solid #ffffff2b;background:#ffffff0b;color:var(--ink);border-radius:7px;padding:9px 11px;font:11px 'DM Mono',monospace;cursor:pointer;transition:.2s}button:hover{border-color:var(--accent);color:var(--accent)}button.primary{background:#63e1cf18;border-color:#63e1cf70;color:var(--accent);flex:1}
+    @media(max-width:650px){header{padding:20px}.intro{left:20px;top:18%}.intro h1{font-size:55px}.intro p{font-size:13px}.panel{left:20px;right:20px;bottom:18px;width:auto}.hint{display:none}.status{font-size:9px}}
+  </style>
+</head>
+<body>
+  <canvas id="water" aria-label="Interactive water simulation"></canvas><div class="grain"></div>
+  <header><div class="brand"><span class="mark"></span><span>DRIFT / 01</span></div><div class="status"><span class="dot"></span> LIVE SIMULATION</div></header>
+  <main class="intro"><div class="eyebrow">Interactive water study</div><h1>Surface<br><em>tension.</em></h1><p>A small digital ocean, responding to every gesture. Move your cursor across the surface or tap to send a ripple outward.</p><div class="hint">✦ DRAG TO DISTURB THE WATER</div></main>
+  <aside class="panel"><div class="panel-title">Simulation controls</div><div class="control"><div class="row"><span>Ripple force</span><span class="value" id="forceVal">0.72</span></div><input id="force" type="range" min=".1" max="1.5" step=".01" value=".72"></div><div class="control"><div class="row"><span>Flow speed</span><span class="value" id="speedVal">0.38</span></div><input id="speed" type="range" min="0" max="1" step=".01" value=".38"></div><div class="buttons"><button class="primary" id="rain">MAKE IT RAIN</button><button id="clear">RESET</button></div></aside>
+<script>
+const canvas=document.getElementById('water'),ctx=canvas.getContext('2d'); let W,H,dpr, ripples=[], drops=[]; let force=.72,speed=.38, t=0;
+function size(){dpr=Math.min(devicePixelRatio,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+function addRipple(x,y,p=force){ripples.push({x,y,r:2,p,life:1,seed:Math.random()*9}); if(ripples.length>22)ripples.shift()}
+function draw(){t+=.008+speed*.012;ctx.fillStyle='#061923';ctx.fillRect(0,0,W,H);
+ let g=ctx.createRadialGradient(W*.58,H*.55,0,W*.58,H*.55,Math.max(W,H)*.8);g.addColorStop(0,'#0e4556');g.addColorStop(.47,'#082b3a');g.addColorStop(1,'#06151f');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // deep moving caustic lines
+ ctx.globalCompositeOperation='screen'; for(let i=0;i<42;i++){let y=(i/42)*H;ctx.beginPath();for(let x=-20;x<W+20;x+=18){let wave=Math.sin(x*.012+i*.7+t*(.8+speed)) * (4+ i*.05)+Math.sin(x*.004-t+i)*10;let yy=y+wave; x===-20?ctx.moveTo(x,yy):ctx.lineTo(x,yy)}ctx.strokeStyle=`hsla(${178+i*.45},75%,${29+i*.35}%,${.05+i*.002})`;ctx.lineWidth=1;ctx.stroke()}
+ // ripples
+ ripples.forEach((q,i)=>{q.r+=1.4+speed*2;q.life*=.978;let a=q.life*.42;for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(q.x,q.y,q.r+k*12,q.r*(.38+k*.08),0,0,Math.PI*2);ctx.strokeStyle=`rgba(112,231,220,${a/(k+1)})`;ctx.lineWidth=1.2;ctx.stroke()}});ripples=ripples.filter(q=>q.life>.04);
+ // particles / glints
+ for(let i=0;i<80;i++){let x=(Math.sin(i*12.71+t*.18)*.5+.5)*W,y=(Math.cos(i*5.31+t*.22)*.5+.5)*H;ctx.fillStyle=`rgba(164,250,235,${.08+Math.sin(i+t*2)*.04})`;ctx.fillRect(x,y,1,1)}ctx.globalCompositeOperation='source-over';requestAnimationFrame(draw)}
+function pointer(e){addRipple(e.clientX,e.clientY);}
+canvas.addEventListener('pointerdown',e=>{pointer(e);canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointermove',e=>{if(e.buttons)addRipple(e.clientX,e.clientY,force*.42)});
+forceEl=document.getElementById('force');speedEl=document.getElementById('speed');forceEl.oninput=e=>{force=+e.target.value;document.getElementById('forceVal').textContent=force.toFixed(2)};speedEl.oninput=e=>{speed=+e.target.value;document.getElementById('speedVal').textContent=speed.toFixed(2)};
+document.getElementById('clear').onclick=()=>ripples=[];document.getElementById('rain').onclick=()=>{for(let i=0;i<18;i++)setTimeout(()=>addRipple(Math.random()*W,Math.random()*H,force*.7),i*90)};addEventListener('resize',size);size();draw();
+</script>
+</body></html>
