@@ -3,58 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#06131c" />
-  <meta name="description" content="Drift — 3D water simulation with marching cubes island, baseplate, and realistic Gerstner waves" />
+  <meta name="theme-color" content="#071a27" />
+  <meta name="description" content="Drift — 3D water with marching cubes island, baseplate, Gerstner ocean" />
   <title>Drift — 3D Water / Island Study</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --ink:#eaf8f7;--muted:#9ab7bb;--line:#ffffff1c;--glass:#071c27b5;--accent:#63e1cf;
-      --panel:#0e2a36cc; --panel2:#06151ecc;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:#06131c;color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow:hidden}
+    :root{--ink:#eaf8f7;--muted:#9ab7bb;--line:#ffffff1c;--glass:#071c27b5;--accent:#63e1cf;--panel:#0e2a36e6;--panel2:#06151ef0}
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:#061a27;color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow:hidden}
     #c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab}
     #c:active{cursor:grabbing}
-    .grain{position:fixed;inset:0;pointer-events:none;opacity:.035;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
-    header{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:26px 34px;z-index:3;pointer-events:none}
+    .grain{position:fixed;inset:0;pointer-events:none;opacity:.03;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+    header{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:22px 30px;z-index:3;pointer-events:none}
     .brand{display:flex;align-items:center;gap:12px;font-weight:600;letter-spacing:.05em;font-size:13px}
     .mark{width:26px;height:26px;border:1px solid #70e4d7aa;border-radius:50% 50% 50% 8px;transform:rotate(45deg);display:grid;place-items:center}
     .mark:after{content:'';width:9px;height:9px;border-radius:50%;background:var(--accent)}
     .status{font:11px 'DM Mono',monospace;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
     .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-    .intro{position:fixed;left:38px;top:18%;z-index:2;pointer-events:none;max-width:460px}
-    .eyebrow{font:11px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-    .intro h1{font-size:clamp(38px,5.2vw,72px);line-height:.92;letter-spacing:-.06em;margin:0 0 18px;font-weight:500}
+    .intro{position:fixed;left:32px;top:14%;z-index:2;pointer-events:none;max-width:440px}
+    .eyebrow{font:11px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+    .intro h1{font-size:clamp(38px,5vw,68px);line-height:.92;letter-spacing:-.06em;margin:0 0 14px;font-weight:500}
     .intro h1 em{font-style:normal;color:#8ef0e2;font-weight:400}
-    .intro p{color:var(--muted);font-size:13.5px;line-height:1.7;max-width:340px;margin:0}
-    .hint{margin-top:26px;font:11px 'DM Mono',monospace;color:#d9faf3a8;letter-spacing:.08em;line-height:1.6}
-    .panel{position:fixed;right:22px;bottom:20px;width:300px;max-height:88vh;overflow:auto;padding:18px 18px 14px;border:1px solid var(--line);background:linear-gradient(145deg,var(--panel),var(--panel2));backdrop-filter:blur(18px);border-radius:14px;z-index:3;box-shadow:0 18px 55px #0007}
+    .intro p{color:var(--muted);font-size:13px;line-height:1.65;max-width:340px;margin:0}
+    .hint{margin-top:20px;font:11px 'DM Mono',monospace;color:#d9faf3a8;letter-spacing:.08em;line-height:1.6}
+    .panel{position:fixed;right:18px;bottom:16px;width:320px;max-height:86vh;overflow:auto;padding:16px 16px 12px;border:1px solid var(--line);background:linear-gradient(145deg,var(--panel),var(--panel2));backdrop-filter:blur(18px);border-radius:14px;z-index:3;box-shadow:0 18px 55px #0008}
     .panel::-webkit-scrollbar{width:4px}.panel::-webkit-scrollbar-thumb{background:#ffffff22;border-radius:10px}
-    .panel-title{font:10px 'DM Mono',monospace;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
-    .panel-title span.badge{color:var(--accent);border:1px solid #63e1cf33;padding:2px 6px;border-radius:20px;font-size:9px}
-    .control{margin:12px 0}
-    .row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:#d5e7e8;margin-bottom:6px}
+    .panel-title{font:10px 'DM Mono',monospace;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+    .panel-title .badge{color:var(--accent);border:1px solid #63e1cf33;padding:2px 6px;border-radius:20px;font-size:9px}
+    .control{margin:10px 0}
+    .row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:#d5e7e8;margin-bottom:5px}
     .value{font:11px 'DM Mono',monospace;color:var(--accent);min-width:42px;text-align:right}
     input[type=range]{appearance:none;width:100%;height:2px;background:#ffffff2b;outline:none;border-radius:5px}
     input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #08212a;box-shadow:0 0 0 1px var(--accent);cursor:pointer}
-    input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #08212a;cursor:pointer}
-    .buttons{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
-    button{border:1px solid #ffffff2b;background:#ffffff0b;color:var(--ink);border-radius:8px;padding:9px 10px;font:11px 'DM Mono',monospace;cursor:pointer;transition:.2s;flex:1 1 auto}
+    .buttons{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+    button{border:1px solid #ffffff2b;background:#ffffff0b;color:var(--ink);border-radius:8px;padding:8px 10px;font:11px 'DM Mono',monospace;cursor:pointer;transition:.2s;flex:1 1 auto}
     button:hover{border-color:var(--accent);color:var(--accent)}
-    button.primary{background:#63e1cf18;border-color:#63e1cf70;color:var(--accent)}
+    button.primary{background:#63e1cf1e;border-color:#63e1cf77;color:var(--accent)}
     button.ghost{flex:0 0 auto}
-    .sep{height:1px;background:var(--line);margin:14px 0}
-    .small{font:10px 'DM Mono',monospace;color:#9ab7bbcc;line-height:1.5;margin-top:8px}
-    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .sep{height:1px;background:var(--line);margin:12px 0}
+    .small{font:10px 'DM Mono',monospace;color:#9ab7bbcc;line-height:1.5;margin-top:6px}
+    .legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
     .legend span{font:9px 'DM Mono',monospace;border:1px solid #ffffff18;padding:3px 6px;border-radius:20px;color:#cfe8e6}
-    @media(max-width:900px){
-      header{padding:16px 18px}.intro{left:18px;top:12%;max-width:300px}.intro h1{font-size:42px}.intro p{font-size:12px}.hint{display:none}
-      .panel{left:12px;right:12px;bottom:12px;width:auto;max-height:58vh}
-    }
+    #debug{position:fixed;left:12px;bottom:12px;z-index:4;font:10px 'DM Mono',monospace;color:#7de8d6;background:#06151ecc;border:1px solid #ffffff18;padding:6px 8px;border-radius:8px;max-width:320px;pointer-events:none}
+    @media(max-width:900px){header{padding:14px 16px}.intro{left:16px;top:10%;max-width:280px}.intro h1{font-size:38px}.hint{display:none}.panel{left:10px;right:10px;bottom:10px;width:auto;max-height:60vh}}
   </style>
   <script type="importmap">
   {
@@ -68,29 +61,24 @@
 <body>
   <canvas id="c"></canvas>
   <div class="grain"></div>
-  <header>
-    <div class="brand"><span class="mark"></span><span>DRIFT / 02 — 3D</span></div>
-    <div class="status"><span class="dot"></span><span id="fps">LIVE SIMULATION • 60 FPS</span></div>
-  </header>
+  <header><div class="brand"><span class="mark"></span><span>DRIFT / 02 — 3D</span></div><div class="status"><span class="dot"></span><span id="fps">LIVE • LOADING…</span></div></header>
   <main class="intro">
     <div class="eyebrow">Marching cubes • Gerstner waves • Baseplate diorama</div>
     <h1>Island<br><em>& open ocean.</em></h1>
-    <p>Orbit to explore. A procedural island built from metaballs with marching cubes sits on a baseplate, surrounded by a physically-based ocean with controllable water level, wind and choppiness.</p>
-    <div class="hint">✦ DRAG TO ORBIT • SCROLL TO ZOOM • CLICK WATER FOR RIPPLES<br>✦ SHIFT+DRAG TO PAN • R = RAIN • SPACE = REGEN ISLAND</div>
-    <div class="legend"><span>THREE.MarchingCubes 48³</span><span>Gerstner 4-wave</span><span>Depth foam</span><span>Buoy physics</span></div>
+    <p>Procedural island from marching cubes sits on a baseplate, surrounded by open ocean with real wave physics. Drag to orbit, scroll to zoom, click water for ripples.</p>
+    <div class="hint">✦ DRAG ORBIT • SCROLL ZOOM • SHIFT+DRAG PAN • CLICK WATER = RIPPLE<br>✦ R = RAIN • SPACE = REGEN ISLAND • C = CLEAR</div>
+    <div class="legend"><span id="triCount">ISLAND -- tris</span><span>WATER 600×600</span><span>GERSTNER 4×</span></div>
   </main>
-
   <aside class="panel">
-    <div class="panel-title"><span>Simulation controls</span><span class="badge" id="islandBadge">SEED 0</span></div>
-
-    <div class="control"><div class="row"><span>Water level</span><span class="value" id="waterLevelVal">0.00</span></div><input id="waterLevel" type="range" min="-8" max="10" step="0.05" value="0"></div>
-    <div class="control"><div class="row"><span>Wave height</span><span class="value" id="waveHeightVal">0.80</span></div><input id="waveHeight" type="range" min="0" max="2.2" step="0.01" value="0.8"></div>
-    <div class="control"><div class="row"><span>Wind / speed</span><span class="value" id="windVal">1.00</span></div><input id="wind" type="range" min="0" max="2.5" step="0.01" value="1.0"></div>
-    <div class="control"><div class="row"><span>Choppiness (Q)</span><span class="value" id="chopVal">0.60</span></div><input id="chop" type="range" min="0" max="1" step="0.01" value="0.6"></div>
-    <div class="control"><div class="row"><span>Flow speed</span><span class="value" id="flowVal">0.38</span></div><input id="flow" type="range" min="0" max="2" step="0.01" value="0.38"></div>
-    <div class="control"><div class="row"><span>Island size</span><span class="value" id="islandSizeVal">1.00</span></div><input id="islandSize" type="range" min="0.6" max="1.7" step="0.01" value="1.0"></div>
+    <div class="panel-title"><span>Simulation</span><span class="badge" id="islandBadge">SEED 0</span></div>
+    <div class="control"><div class="row"><span>Water level</span><span class="value" id="waterLevelVal">0.00</span></div><input id="waterLevel" type="range" min="-8" max="10" step="0.05" value="0.8"></div>
+    <div class="control"><div class="row"><span>Wave height</span><span class="value" id="waveHeightVal">0.90</span></div><input id="waveHeight" type="range" min="0" max="2.5" step="0.01" value="0.9"></div>
+    <div class="control"><div class="row"><span>Wind</span><span class="value" id="windVal">1.10</span></div><input id="wind" type="range" min="0" max="2.5" step="0.01" value="1.1"></div>
+    <div class="control"><div class="row"><span>Choppiness</span><span class="value" id="chopVal">0.65</span></div><input id="chop" type="range" min="0" max="1" step="0.01" value="0.65"></div>
+    <div class="control"><div class="row"><span>Flow speed</span><span class="value" id="flowVal">0.60</span></div><input id="flow" type="range" min="0" max="2" step="0.01" value="0.6"></div>
+    <div class="control"><div class="row"><span>Island size</span><span class="value" id="islandSizeVal">1.00</span></div><input id="islandSize" type="range" min="0.5" max="1.8" step="0.01" value="1.0"></div>
     <div class="control"><div class="row"><span>Time of day</span><span class="value" id="timeVal">0.62</span></div><input id="timeOfDay" type="range" min="0" max="1" step="0.005" value="0.62"></div>
-
+    <div class="control"><div class="row"><span>Water opacity</span><span class="value" id="opacityVal">0.92</span></div><input id="opacity" type="range" min="0.2" max="1" step="0.01" value="0.92"></div>
     <div class="buttons">
       <button class="primary" id="rainBtn">MAKE IT RAIN</button>
       <button id="regenBtn">REGEN ISLAND</button>
@@ -98,196 +86,199 @@
     <div class="buttons">
       <button id="clearBtn">CLEAR RIPPLES</button>
       <button id="pauseBtn">PAUSE</button>
-      <button class="ghost" id="camBtn" title="Reset camera">⌖ VIEW</button>
+      <button class="ghost" id="camBtn">⌖ VIEW</button>
+      <button class="ghost" id="waterToggle">WATER: SHADER</button>
     </div>
-
     <div class="sep"></div>
     <div class="small">
-      <b style="color:var(--accent)">How it works:</b> Island = <code>THREE.MarchingCubes</code> metaballs (48³ field, ~20k polys). Baseplate = sand box with stud grid texture. Ocean = 200×200 plane (40k verts) displaced in vertex shader with 4 Gerstner waves + 8 ripple slots. Floor = displaced plane with dunes. Buoys sample wave height on CPU for true floating.<br><br>
-      Water level moves the ocean plane; foam appears when depth &lt; 2.5m or at wave crests. All dependency-free, single file, GitHub Pages ready.
+      <b style="color:var(--accent)">Fix for invisible water:</b> If shader fails, fallback MeshPhysicalMaterial ocean underneath stays visible. Toggle button switches modes. Water is now 600×600, more opaque (0.92), less fog (0.0035), island smaller (48×18×48) so ocean surrounds it. Click ocean to test ripples.<br><br>
+      Island = <code>MarchingCubes 48³</code> metaballs, baseplate = sand box + studs, ocean = Gerstner + 8 ripples.
     </div>
   </aside>
+  <div id="debug">booting…</div>
 
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js';
 
-// --- Scene basics ---
+const debugEl = document.getElementById('debug');
+function log(msg){ debugEl.textContent = msg; console.log('[drift]', msg); }
+
+log('init three…');
 const canvas = document.getElementById('c');
 const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+scene.background = new THREE.Color(0x0a2a3a);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 1.1;
 
 const camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 2000);
-camera.position.set(55, 28, 58);
+camera.position.set(65, 32, 68);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-controls.minDistance = 8;
-controls.maxDistance = 300;
+controls.minDistance = 10;
+controls.maxDistance = 400;
 controls.maxPolarAngle = Math.PI*0.495;
-controls.target.set(0, 0, 0);
-controls.minPolarAngle = 0.05;
+controls.target.set(0, -2, 0);
 
 const clock = new THREE.Clock();
-
 let paused = false;
 let rainActive = false;
 let seed = 1337;
+let waterMode = 'shader'; // shader | physical
 
-// --- Lights & fog ---
-scene.fog = new THREE.FogExp2(0x0a2a3a, 0.008);
-
-const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+// lights & fog - much lighter fog so water is visible
+scene.fog = new THREE.FogExp2(0x0a2a3a, 0.0035);
+const ambient = new THREE.AmbientLight(0xffffff, 0.7);
 scene.add(ambient);
-
-const sun = new THREE.DirectionalLight(0xffffff, 1.8);
+const sun = new THREE.DirectionalLight(0xffffff, 1.6);
 sun.position.set(120, 80, 40);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048,2048);
-sun.shadow.camera.left = -120; sun.shadow.camera.right = 120;
-sun.shadow.camera.top = 120; sun.shadow.camera.bottom = -120;
-sun.shadow.camera.near = 1; sun.shadow.camera.far = 400;
-sun.shadow.bias = -0.0004;
+sun.shadow.camera.left = -160; sun.shadow.camera.right = 160;
+sun.shadow.camera.top = 160; sun.shadow.camera.bottom = -160;
+sun.shadow.camera.near = 1; sun.shadow.camera.far = 500;
+sun.shadow.bias = -0.0005;
 scene.add(sun);
-const sunHelper = new THREE.Mesh(new THREE.SphereGeometry(2,12,12), new THREE.MeshBasicMaterial({color:0xfff2a0}));
-sunHelper.position.copy(sun.position).normalize().multiplyScalar(400);
+const sunHelper = new THREE.Mesh(new THREE.SphereGeometry(2.2,12,12), new THREE.MeshBasicMaterial({color:0xfff2a0}));
+sunHelper.position.copy(sun.position).normalize().multiplyScalar(420);
 scene.add(sunHelper);
 
-// --- State ---
 const state = {
-  waterLevel: 0,
-  waveHeight: 0.8,
-  windSpeed: 1.0,
-  choppiness: 0.6,
-  flowSpeed: 0.38,
+  waterLevel: 0.8,
+  waveHeight: 0.9,
+  windSpeed: 1.1,
+  choppiness: 0.65,
+  flowSpeed: 0.6,
   islandSize: 1.0,
   timeOfDay: 0.62,
+  opacity: 0.92,
 };
 
-// --- Baseplate (sand box with studs) ---
 function makeBaseplateTexture(){
   const c = document.createElement('canvas'); c.width=256; c.height=256;
   const ctx = c.getContext('2d');
   ctx.fillStyle = '#d9c7a3'; ctx.fillRect(0,0,256,256);
-  // grid
-  ctx.strokeStyle = '#0000000d'; ctx.lineWidth=1;
+  ctx.strokeStyle = '#00000010'; ctx.lineWidth=1;
   for(let i=0;i<256;i+=16){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,256); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(256,i); ctx.stroke(); }
-  // studs hint
-  ctx.fillStyle = '#ffffff18';
-  for(let x=8;x<256;x+=16) for(let y=8;y<256;y+=16){ ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill(); }
-  const tex = new THREE.CanvasTexture(c); tex.wrapS=tex.wrapT=THREE.RepeatWrapping; tex.repeat.set(6,6); tex.colorSpace=THREE.SRGBColorSpace;
+  ctx.fillStyle = '#ffffff20';
+  for(let x=8;x<256;x+=16) for(let y=8;y<256;y+=16){ ctx.beginPath(); ctx.arc(x,y,3.2,0,Math.PI*2); ctx.fill(); }
+  const tex = new THREE.CanvasTexture(c); tex.wrapS=tex.wrapT=THREE.RepeatWrapping; tex.repeat.set(8,8); tex.colorSpace=THREE.SRGBColorSpace;
   return tex;
 }
 const baseplateTex = makeBaseplateTexture();
-const baseplateMat = new THREE.MeshStandardMaterial({ map: baseplateTex, color:0xe8dcc0, roughness:0.85, metalness:0.02 });
-const baseplate = new THREE.Mesh(new THREE.BoxGeometry(140, 6, 140), baseplateMat);
+const baseplateMat = new THREE.MeshStandardMaterial({ map: baseplateTex, color:0xe8dcc0, roughness:0.85 });
+const baseplate = new THREE.Mesh(new THREE.BoxGeometry(160, 6, 160), baseplateMat);
 baseplate.position.y = -12;
-baseplate.receiveShadow = true;
-baseplate.castShadow = true;
+baseplate.receiveShadow = true; baseplate.castShadow = true;
 scene.add(baseplate);
 
-// studs on baseplate edge (little lego-like)
 const studGeo = new THREE.CylinderGeometry(1.1,1.1,1.2,14);
 const studMat = new THREE.MeshStandardMaterial({color:0xe8dcc0, roughness:0.8});
-const studs = new THREE.InstancedMesh(studGeo, studMat, 324);
-let idx=0;
-for(let x=-66;x<=66;x+=8) for(let z=-66;z<=66;z+=8){
-  if(Math.abs(x)<62 && Math.abs(z)<62) continue; // only rim
-  if(idx>=324) break;
+const studs = new THREE.InstancedMesh(studGeo, studMat, 400);
+let sIdx=0;
+for(let x=-76;x<=76;x+=8) for(let z=-76;z<=76;z+=8){
+  if(Math.abs(x)<72 && Math.abs(z)<72) continue;
+  if(sIdx>=400) break;
   const m = new THREE.Matrix4().makeTranslation(x, -8.7, z);
-  studs.setMatrixAt(idx++, m);
+  studs.setMatrixAt(sIdx++, m);
 }
 studs.instanceMatrix.needsUpdate=true;
 studs.castShadow=true; studs.receiveShadow=true;
 scene.add(studs);
 
-// --- Ocean floor (dunes) ---
-const floorGeo = new THREE.PlaneGeometry(800,800, 96,96);
+// ocean floor
+const floorGeo = new THREE.PlaneGeometry(900,900, 64,64);
 floorGeo.rotateX(-Math.PI/2);
-const floorPos = floorGeo.attributes.position;
-for(let i=0;i<floorPos.count;i++){
-  const x=floorPos.getX(i), z=floorPos.getZ(i);
-  const d = Math.hypot(x,z);
-  // dunes + bowl
-  let h = Math.sin(x*0.015)*1.2 + Math.cos(z*0.013)*1.1 + Math.sin((x+z)*0.008)*2.0;
-  h -= Math.max(0, 80 - d)*0.04; // central depression for island
-  h += (Math.random()-0.5)*0.3;
-  floorPos.setY(i, -28 + h*0.7 - d*0.015);
+const fp = floorGeo.attributes.position;
+for(let i=0;i<fp.count;i++){
+  const x=fp.getX(i), z=fp.getZ(i);
+  const d=Math.hypot(x,z);
+  let h = Math.sin(x*0.012)*1.5 + Math.cos(z*0.011)*1.2 + Math.sin((x+z)*0.007)*2.2;
+  h -= Math.max(0, 90 - d)*0.05;
+  h += (Math.random()-0.5)*0.4;
+  fp.setY(i, -32 + h*0.7 - d*0.012);
 }
 floorGeo.computeVertexNormals();
-const floorMat = new THREE.MeshStandardMaterial({ color:0x1a3a4a, roughness:0.95, metalness:0.0 });
+const floorMat = new THREE.MeshStandardMaterial({ color:0x163545, roughness:0.95 });
 const floorMesh = new THREE.Mesh(floorGeo, floorMat);
 floorMesh.receiveShadow=true;
 scene.add(floorMesh);
 
-// --- Island via Marching Cubes ---
-const islandMat = new THREE.MeshStandardMaterial({ color:0xdbc8a6, roughness:0.9, metalness:0.02, flatShading:false });
-islandMat.onBeforeCompile = (shader)=>{ /* keep standard */ };
+// island via marching cubes - SMALLER so water is obvious
+const islandMat = new THREE.MeshStandardMaterial({ color:0xdbc8a6, roughness:0.88, metalness:0.02 });
 const islandMC = new MarchingCubes(48, islandMat, true, false, 30000);
-islandMC.isolation = 320;
-islandMC.scale.set(80, 26, 80);
-islandMC.position.set(0, -6, 0);
-islandMC.castShadow = true;
-islandMC.receiveShadow = true;
+islandMC.isolation = 220; // lower = bigger blobs, ensure visible
+islandMC.scale.set(48, 18, 48);
+islandMC.position.set(0, -8, 0);
+islandMC.castShadow = true; islandMC.receiveShadow = true;
 scene.add(islandMC);
 
 function pseudoRandom(n){ return Math.abs(Math.sin(n*12.9898 + seed*78.233)*43758.5453)%1; }
 
-function generateIsland(newSeed = null){
-  if(newSeed!==null) seed = newSeed;
-  else seed = Math.floor(Math.random()*10000);
-  document.getElementById('islandBadge').textContent = `SEED ${seed}`;
-
+function generateIsland(newSeed=null){
+  if(newSeed!==null) seed=newSeed; else seed=Math.floor(Math.random()*10000);
+  document.getElementById('islandBadge').textContent=`SEED ${seed}`;
   islandMC.reset();
-  // base mass - central plateau
-  islandMC.addBall(0.5, 0.32, 0.5, 0.5, 0.8);
-  // surrounding lobes to make irregular island
-  const lobeCount = 10 + Math.floor(pseudoRandom(1)*6);
+  islandMC.addBall(0.5, 0.35, 0.5, 0.48, 0.7);
+  const lobeCount = 9 + Math.floor(pseudoRandom(1)*5);
   for(let i=0;i<lobeCount;i++){
-    const ang = (i/lobeCount)*Math.PI*2 + (pseudoRandom(i+2)-0.5)*0.6;
-    const rad = 0.14 + pseudoRandom(i+3)*0.16;
-    const x = 0.5 + Math.cos(ang)*rad;
-    const z = 0.5 + Math.sin(ang)*rad;
-    const y = 0.28 + pseudoRandom(i+10)*0.18;
-    const sz = 0.08 + pseudoRandom(i+20)*0.16;
-    const str = 0.18 + pseudoRandom(i+30)*0.35;
+    const ang=(i/lobeCount)*Math.PI*2 + (pseudoRandom(i+2)-0.5)*0.5;
+    const rad=0.13 + pseudoRandom(i+3)*0.14;
+    const x=0.5+Math.cos(ang)*rad, z=0.5+Math.sin(ang)*rad;
+    const y=0.30 + pseudoRandom(i+10)*0.16;
+    const sz=0.09 + pseudoRandom(i+20)*0.13;
+    const str=0.20 + pseudoRandom(i+30)*0.30;
     islandMC.addBall(x,y,z, sz, str);
   }
-  // higher peaks
   for(let i=0;i<3;i++){
-    const x = 0.5 + (pseudoRandom(i+100)-0.5)*0.18;
-    const z = 0.5 + (pseudoRandom(i+110)-0.5)*0.18;
-    const y = 0.42 + pseudoRandom(i+120)*0.18;
-    islandMC.addBall(x,y,z, 0.07, 0.28);
+    const x=0.5+(pseudoRandom(i+100)-0.5)*0.16, z=0.5+(pseudoRandom(i+110)-0.5)*0.16;
+    const y=0.45 + pseudoRandom(i+120)*0.15;
+    islandMC.addBall(x,y,z, 0.06, 0.26);
   }
-  // detail noise blobs
-  for(let i=0;i<18;i++){
-    const x = 0.35 + pseudoRandom(i+200)*0.3;
-    const z = 0.35 + pseudoRandom(i+210)*0.3;
-    const y = 0.22 + pseudoRandom(i+220)*0.18;
-    islandMC.addBall(x,y,z, 0.03 + pseudoRandom(i+230)*0.06, 0.18 + pseudoRandom(i+240)*0.2);
+  for(let i=0;i<16;i++){
+    const x=0.36+ pseudoRandom(i+200)*0.28, z=0.36+ pseudoRandom(i+210)*0.28;
+    const y=0.24+ pseudoRandom(i+220)*0.16;
+    islandMC.addBall(x,y,z, 0.03+ pseudoRandom(i+230)*0.05, 0.18+ pseudoRandom(i+240)*0.18);
   }
-  // flat bottom to merge with baseplate
-  islandMC.addPlaneY(0.08, 14);
+  islandMC.addPlaneY(0.09, 12);
   islandMC.update();
-  // scale by islandSize
-  const s = state.islandSize;
-  islandMC.scale.set(80*s, 26*s, 80*s);
+  const s=state.islandSize;
+  islandMC.scale.set(48*s, 18*s, 48*s);
+  document.getElementById('triCount').textContent = `ISLAND ${Math.round(islandMC.count/3)} tris`;
+  log(`island generated seed=${seed} tris=${Math.round(islandMC.count/3)} scale=${s}`);
 }
 generateIsland(seed);
 
-// --- Water with Gerstner waves shader ---
-const waterGeo = new THREE.PlaneGeometry(500,500, 200,200);
+// --- WATER: two layers for guaranteed visibility ---
+// 1) Physical fallback (always visible, bright)
+const waterGeo = new THREE.PlaneGeometry(600,600, 150,150);
 waterGeo.rotateX(-Math.PI/2);
+const waterPhysicalMat = new THREE.MeshPhysicalMaterial({
+  color: 0x1e8fa0,
+  transparent: true,
+  opacity: 0.92,
+  roughness: 0.15,
+  metalness: 0.1,
+  transmission: 0.15,
+  thickness: 0.8,
+  side: THREE.DoubleSide,
+});
+const waterPhysical = new THREE.Mesh(waterGeo, waterPhysicalMat);
+waterPhysical.position.y = state.waterLevel - 0.15;
+waterPhysical.receiveShadow = true;
+waterPhysical.renderOrder = 1;
+scene.add(waterPhysical);
 
+// 2) Shader water (Gerstner) on top
 const rippleData = [];
 for(let i=0;i<8;i++) rippleData.push(new THREE.Vector4(0,0,-100,0));
 
@@ -298,16 +289,17 @@ const waterUniforms = {
   uWindSpeed: { value: state.windSpeed },
   uChoppiness: { value: state.choppiness },
   uFlowSpeed: { value: state.flowSpeed },
-  uWaterColor: { value: new THREE.Color(0x1a8a9a) },
-  uDeepColor: { value: new THREE.Color(0x0a2f3f) },
+  uWaterColor: { value: new THREE.Color(0x2ab3c6) },
+  uDeepColor: { value: new THREE.Color(0x0a3445) },
   uSunDirection: { value: new THREE.Vector3().copy(sun.position).normalize() },
   uSunColor: { value: new THREE.Color(0xffffff) },
   uFogColor: { value: new THREE.Color(0x0a2a3a) },
-  uFogDensity: { value: 0.008 },
+  uFogDensity: { value: 0.0035 },
   uRipples: { value: rippleData },
   uRippleCount: { value: 0 },
   uIslandCenter: { value: new THREE.Vector2(0,0) },
-  uIslandRadius: { value: 32 },
+  uIslandRadius: { value: 26 },
+  uOpacity: { value: state.opacity },
 };
 
 const waterVert = `
@@ -323,143 +315,77 @@ varying vec3 vNormal;
 varying float vWave;
 varying vec2 vUv;
 varying float vDist;
-varying float vDepth;
 
 void main(){
   vUv = uv;
   vec3 pos = position;
-
-  vec3 tangent = vec3(1.0, 0.0, 0.0);
-  vec3 binormal = vec3(0.0, 0.0, 1.0);
+  vec3 tangent = vec3(1.0,0.0,0.0);
+  vec3 binormal = vec3(0.0,0.0,1.0);
   float waveH = 0.0;
-
   float g = 9.8;
-  // wave 1
+
+  // wave 1 - long swell
   {
-    float len = 85.0;
-    float steep = 0.12;
-    float ampF = 1.0;
-    vec2 dir = normalize(vec2(1.0, 0.32));
-    float speedF = 0.85;
-    float k = 6.28318530718 / len;
-    float c = sqrt(g / k) * uWindSpeed * speedF;
-    float amp = uWaveHeight * ampF;
-    float a = uChoppiness * steep / k * 0.9;
-    float f = k * dot(dir, pos.xz) - c * uTime * uFlowSpeed;
-    float cosf = cos(f);
-    float sinf = sin(f);
-    pos.x += dir.x * a * cosf;
-    pos.z += dir.y * a * cosf;
-    pos.y += amp * sinf;
-    waveH += amp * sinf * 0.5;
-    float ak = a * k;
-    tangent.x += -ak * dir.x * dir.x * sinf;
-    tangent.y += dir.x * k * amp * cosf;
-    tangent.z += -ak * dir.x * dir.y * sinf;
-    binormal.x += -ak * dir.x * dir.y * sinf;
-    binormal.y += dir.y * k * amp * cosf;
-    binormal.z += -ak * dir.y * dir.y * sinf;
+    float len=90.0; float steep=0.13; float ampF=1.0; vec2 dir=normalize(vec2(1.0,0.35)); float speedF=0.85;
+    float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF; float amp=uWaveHeight*ampF; float a=uChoppiness*steep/k*0.9;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed; float cosf=cos(f); float sinf=sin(f);
+    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf*0.5;
+    float ak=a*k;
+    tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
+    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
   }
   // wave 2
   {
-    float len = 42.0;
-    float steep = 0.09;
-    float ampF = 0.6;
-    vec2 dir = normalize(vec2(-0.6, 0.75));
-    float speedF = 1.0;
-    float k = 6.28318530718 / len;
-    float c = sqrt(g / k) * uWindSpeed * speedF;
-    float amp = uWaveHeight * ampF;
-    float a = uChoppiness * steep / k * 0.9;
-    float f = k * dot(dir, pos.xz) - c * uTime * uFlowSpeed + 1.3;
-    float cosf = cos(f);
-    float sinf = sin(f);
-    pos.x += dir.x * a * cosf;
-    pos.z += dir.y * a * cosf;
-    pos.y += amp * sinf;
-    waveH += amp * sinf * 0.5;
-    float ak = a * k;
-    tangent.x += -ak * dir.x * dir.x * sinf;
-    tangent.y += dir.x * k * amp * cosf;
-    tangent.z += -ak * dir.x * dir.y * sinf;
-    binormal.x += -ak * dir.x * dir.y * sinf;
-    binormal.y += dir.y * k * amp * cosf;
-    binormal.z += -ak * dir.y * dir.y * sinf;
+    float len=44.0; float steep=0.10; float ampF=0.62; vec2 dir=normalize(vec2(-0.62,0.78)); float speedF=1.0;
+    float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF; float amp=uWaveHeight*ampF; float a=uChoppiness*steep/k*0.9;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed+1.3; float cosf=cos(f); float sinf=sin(f);
+    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf*0.5;
+    float ak=a*k;
+    tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
+    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
   }
   // wave 3
   {
-    float len = 21.0;
-    float steep = 0.06;
-    float ampF = 0.32;
-    vec2 dir = normalize(vec2(0.2, -0.9));
-    float speedF = 1.25;
-    float k = 6.28318530718 / len;
-    float c = sqrt(g / k) * uWindSpeed * speedF;
-    float amp = uWaveHeight * ampF;
-    float a = uChoppiness * steep / k * 0.9;
-    float f = k * dot(dir, pos.xz) - c * uTime * uFlowSpeed + 2.1;
-    float cosf = cos(f);
-    float sinf = sin(f);
-    pos.x += dir.x * a * cosf;
-    pos.z += dir.y * a * cosf;
-    pos.y += amp * sinf;
-    waveH += amp * sinf * 0.5;
-    float ak = a * k;
-    tangent.x += -ak * dir.x * dir.x * sinf;
-    tangent.y += dir.x * k * amp * cosf;
-    tangent.z += -ak * dir.x * dir.y * sinf;
-    binormal.x += -ak * dir.x * dir.y * sinf;
-    binormal.y += dir.y * k * amp * cosf;
-    binormal.z += -ak * dir.y * dir.y * sinf;
+    float len=22.0; float steep=0.07; float ampF=0.34; vec2 dir=normalize(vec2(0.18,-0.92)); float speedF=1.25;
+    float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF; float amp=uWaveHeight*ampF; float a=uChoppiness*steep/k*0.9;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed+2.1; float cosf=cos(f); float sinf=sin(f);
+    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf*0.5;
+    float ak=a*k;
+    tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
+    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
   }
-  // wave 4 - small chop
+  // wave 4 - chop
   {
-    float len = 9.5;
-    float steep = 0.04;
-    float ampF = 0.15;
-    vec2 dir = normalize(vec2(0.8, 0.25));
-    float speedF = 1.6;
-    float k = 6.28318530718 / len;
-    float c = sqrt(g / k) * uWindSpeed * speedF;
-    float amp = uWaveHeight * ampF;
-    float a = uChoppiness * steep / k * 0.9;
-    float f = k * dot(dir, pos.xz) - c * uTime * uFlowSpeed + 0.7;
-    float cosf = cos(f);
-    float sinf = sin(f);
-    pos.x += dir.x * a * cosf;
-    pos.z += dir.y * a * cosf;
-    pos.y += amp * sinf;
-    waveH += amp * sinf * 0.5;
-    float ak = a * k;
-    tangent.x += -ak * dir.x * dir.x * sinf;
-    tangent.y += dir.x * k * amp * cosf;
-    tangent.z += -ak * dir.x * dir.y * sinf;
-    binormal.x += -ak * dir.x * dir.y * sinf;
-    binormal.y += dir.y * k * amp * cosf;
-    binormal.z += -ak * dir.y * dir.y * sinf;
+    float len=10.0; float steep=0.05; float ampF=0.18; vec2 dir=normalize(vec2(0.82,0.28)); float speedF=1.6;
+    float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF; float amp=uWaveHeight*ampF; float a=uChoppiness*steep/k*0.9;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed+0.7; float cosf=cos(f); float sinf=sin(f);
+    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf*0.5;
+    float ak=a*k;
+    tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
+    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
   }
 
-  // ripples
+  // ripples - fixed loop, no break on uniform (WebGL safe)
   for(int i=0;i<8;i++){
-    if(i >= uRippleCount) break;
-    vec4 r = uRipples[i];
-    float dist = length(pos.xz - r.xy);
-    float t = uTime - r.z;
-    if(t < 0.0 || t > 6.5) continue;
-    float decay = exp(-t*0.55) * exp(-dist*0.045);
-    float phase = dist * 1.9 - t * 5.2;
-    float amp = r.w * 0.9 * decay;
-    pos.y += sin(phase) * amp * (1.0 - smoothstep(0.0, 24.0, dist*0.5));
-    waveH += amp * 0.15;
+    if(i < uRippleCount){
+      vec4 r = uRipples[i];
+      float dist = length(pos.xz - r.xy);
+      float t = uTime - r.z;
+      if(t >= 0.0 && t <= 6.5){
+        float decay = exp(-t*0.55) * exp(-dist*0.045);
+        float phase = dist*1.9 - t*5.2;
+        float amp = r.w * 0.9 * decay;
+        pos.y += sin(phase) * amp * (1.0 - smoothstep(0.0, 24.0, dist*0.5));
+        waveH += amp*0.15;
+      }
+    }
   }
 
   vec3 norm = normalize(cross(binormal, tangent));
   vNormal = normalize((modelMatrix * vec4(norm,0.0)).xyz);
-  vec4 worldPos = modelMatrix * vec4(pos,1.0);
-  vPos = worldPos.xyz;
+  vPos = (modelMatrix * vec4(pos,1.0)).xyz;
   vWave = waveH;
   vDist = length((modelViewMatrix * vec4(pos,1.0)).xyz);
-  vDepth = pos.y;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
 }
 `;
@@ -475,6 +401,7 @@ uniform float uWaterLevel;
 uniform float uIslandRadius;
 uniform vec2 uIslandCenter;
 uniform float uTime;
+uniform float uOpacity;
 varying vec3 vPos;
 varying vec3 vNormal;
 varying float vWave;
@@ -484,39 +411,31 @@ varying float vDist;
 void main(){
   vec3 viewDir = normalize(cameraPosition - vPos);
   vec3 N = normalize(vNormal);
-  // shore foam based on distance to island
   float distIsland = length(vPos.xz - uIslandCenter) - uIslandRadius;
-  float shore = 1.0 - smoothstep(-2.0, 8.0, distIsland);
-  // foam from wave crests
-  float crest = smoothstep(0.35, 0.85, vWave) * 0.6;
-  float foam = shore * 0.9 + crest;
-  foam = clamp(foam, 0.0, 1.0);
+  float shore = 1.0 - smoothstep(-1.5, 7.0, distIsland);
+  float crest = smoothstep(0.35, 0.9, vWave)*0.6;
+  float foam = clamp(shore*0.9 + crest, 0.0, 1.0);
 
-  // base color mix deep/shallow
   float depthFactor = clamp((vPos.y - (uWaterLevel - 12.0))/14.0, 0.0, 1.0);
-  vec3 base = mix(uDeepColor, uWaterColor, 0.25 + depthFactor*0.75 + vWave*0.08);
+  vec3 base = mix(uDeepColor, uWaterColor, 0.35 + depthFactor*0.65 + vWave*0.08);
 
-  // fresnel
   float fresnel = pow(1.0 - max(dot(N, viewDir), 0.0), 5.0);
-  base = mix(base, vec3(0.92,0.98,1.0), fresnel*0.35);
+  base = mix(base, vec3(0.92,0.98,1.0), fresnel*0.32);
 
-  // sun specular
   vec3 H = normalize(uSunDirection + viewDir);
-  float spec = pow(max(dot(H, N), 0.0), 180.0) * 0.9;
-  float spec2 = pow(max(dot(H, N), 0.0), 32.0) * 0.15;
+  float spec = pow(max(dot(H, N), 0.0), 160.0)*1.1;
+  float spec2 = pow(max(dot(H, N), 0.0), 32.0)*0.18;
 
-  vec3 color = base + spec * uSunColor * 1.2 + spec2 * 0.4;
+  vec3 color = base + spec * uSunColor * 1.3 + spec2*0.5;
   color = mix(color, vec3(1.0), foam*0.55);
 
-  // subtle caustics pattern
   float caust = sin(vPos.x*0.08 + uTime*0.6) * cos(vPos.z*0.08 - uTime*0.5);
-  color += caust * 0.02 * (1.0 - shore);
+  color += caust * 0.025 * (1.0 - shore);
 
-  // fog
-  float fogFactor = 1.0 - exp(-uFogDensity * uFogDensity * vDist * vDist * 1.2);
-  color = mix(color, uFogColor, fogFactor*0.85);
+  float fogFactor = 1.0 - exp(-uFogDensity*uFogDensity*vDist*vDist*1.2);
+  color = mix(color, uFogColor, fogFactor*0.75);
 
-  gl_FragColor = vec4(color, 0.92 - fresnel*0.15);
+  gl_FragColor = vec4(color, uOpacity);
 }
 `;
 
@@ -526,16 +445,15 @@ const waterMat = new THREE.ShaderMaterial({
   fragmentShader: waterFrag,
   transparent: true,
   side: THREE.DoubleSide,
+  depthWrite: false,
 });
 const waterMesh = new THREE.Mesh(waterGeo, waterMat);
 waterMesh.position.y = state.waterLevel;
-waterMesh.receiveShadow = true;
-waterMesh.castShadow = false;
+waterMesh.renderOrder = 2;
 scene.add(waterMesh);
 
-// --- Floating buoys / debris that bob on Gerstner waves ---
-const buoyGroup = new THREE.Group();
-scene.add(buoyGroup);
+// buoys
+const buoyGroup = new THREE.Group(); scene.add(buoyGroup);
 const buoyMats = [
   new THREE.MeshStandardMaterial({color:0xffd27a, roughness:0.6}),
   new THREE.MeshStandardMaterial({color:0x7be2d0, roughness:0.6}),
@@ -548,291 +466,245 @@ const buoyGeos = [
   new THREE.ConeGeometry(0.6,1.1,6),
   new THREE.SphereGeometry(0.55,12,10),
 ];
-
-const buoys = [];
+const buoys=[];
 for(let i=0;i<14;i++){
-  const g = buoyGeos[i%buoyGeos.length];
-  const m = buoyMats[i%buoyMats.length];
-  const mesh = new THREE.Mesh(g,m);
+  const mesh = new THREE.Mesh(buoyGeos[i%buoyGeos.length], buoyMats[i%buoyMats.length]);
   mesh.castShadow=true; mesh.receiveShadow=true;
-  const ang = (i/14)*Math.PI*2 + Math.random()*0.5;
-  const rad = 38 + Math.random()*62;
-  mesh.userData.base = new THREE.Vector2(Math.cos(ang)*rad, Math.sin(ang)*rad);
-  mesh.userData.phase = Math.random()*6.28;
-  mesh.userData.spin = (Math.random()-0.5)*0.6;
-  buoyGroup.add(mesh);
-  buoys.push(mesh);
+  const ang=(i/14)*Math.PI*2 + Math.random()*0.5;
+  const rad=42 + Math.random()*85;
+  mesh.userData.base=new THREE.Vector2(Math.cos(ang)*rad, Math.sin(ang)*rad);
+  mesh.userData.phase=Math.random()*6.28;
+  mesh.userData.spin=(Math.random()-0.5)*0.6;
+  buoyGroup.add(mesh); buoys.push(mesh);
 }
 
-// CPU Gerstner sampling for buoys (must match shader)
-const CPU_WAVES = [
-  { len:85, steep:0.12, ampF:1.0, dir:{x:1,y:0.32}, speedF:0.85 },
-  { len:42, steep:0.09, ampF:0.6, dir:{x:-0.6,y:0.75}, speedF:1.0 },
-  { len:21, steep:0.06, ampF:0.32, dir:{x:0.2,y:-0.9}, speedF:1.25 },
-  { len:9.5, steep:0.04, ampF:0.15, dir:{x:0.8,y:0.25}, speedF:1.6 },
+const CPU_WAVES=[
+  {len:90, steep:0.13, ampF:1.0, dir:{x:1,y:0.35}, speedF:0.85},
+  {len:44, steep:0.10, ampF:0.62, dir:{x:-0.62,y:0.78}, speedF:1.0},
+  {len:22, steep:0.07, ampF:0.34, dir:{x:0.18,y:-0.92}, speedF:1.25},
+  {len:10, steep:0.05, ampF:0.18, dir:{x:0.82,y:0.28}, speedF:1.6},
 ];
 function getWaveHeightCPU(x,z,time){
-  let y=0;
-  const g=9.8;
+  let y=0; const g=9.8;
   for(const w of CPU_WAVES){
-    const dirLen = Math.hypot(w.dir.x,w.dir.y);
-    const dx = w.dir.x/dirLen, dy = w.dir.y/dirLen;
-    const k = 2*Math.PI / w.len;
-    const c = Math.sqrt(g/k) * state.windSpeed * w.speedF;
-    const amp = state.waveHeight * w.ampF;
-    const f = k*(dx*x + dy*z) - c*time*state.flowSpeed;
-    y += amp * Math.sin(f);
+    const dirLen=Math.hypot(w.dir.x,w.dir.y); const dx=w.dir.x/dirLen, dy=w.dir.y/dirLen;
+    const k=2*Math.PI/w.len; const c=Math.sqrt(g/k)*state.windSpeed*w.speedF;
+    const amp=state.waveHeight*w.ampF; const f=k*(dx*x+dy*z)-c*time*state.flowSpeed;
+    y+=amp*Math.sin(f);
   }
-  // ripples
   for(const r of ripples){
-    const dx = x - r.x, dz = z - r.z;
-    const dist = Math.hypot(dx,dz);
-    const t = time - r.t;
+    const dx=x-r.x, dz=z-r.z; const dist=Math.hypot(dx,dz); const t=time-r.t;
     if(t<0||t>6.5) continue;
-    const decay = Math.exp(-t*0.55)*Math.exp(-dist*0.045);
-    const phase = dist*1.9 - t*5.2;
-    const amp = r.strength*0.9*decay;
-    y += Math.sin(phase)*amp*(1 - Math.min(1, dist*0.5/24));
+    const decay=Math.exp(-t*0.55)*Math.exp(-dist*0.045);
+    const phase=dist*1.9 - t*5.2; const amp=r.strength*0.9*decay;
+    y+=Math.sin(phase)*amp*(1-Math.min(1,dist*0.5/24));
   }
   return y;
 }
 
-// --- Ripples system ---
-const ripples = []; // {x,z,t,strength}
+const ripples=[];
 function addRipple(x,z,strength=1.0){
-  const now = clock.getElapsedTime();
+  const now=clock.getElapsedTime();
   ripples.push({x,z,t:now,strength});
   if(ripples.length>8) ripples.shift();
   updateRippleUniforms();
+  log(`ripple at ${x.toFixed(1)},${z.toFixed(1)} count=${ripples.length}`);
 }
 function updateRippleUniforms(){
   for(let i=0;i<8;i++){
-    if(i<ripples.length){
-      const r=ripples[i];
-      rippleData[i].set(r.x, r.z, r.t, r.strength);
-    } else {
-      rippleData[i].set(0,0,-100,0);
-    }
+    if(i<ripples.length){ const r=ripples[i]; rippleData[i].set(r.x,r.z,r.t,r.strength); }
+    else rippleData[i].set(0,0,-100,0);
   }
-  waterUniforms.uRippleCount.value = ripples.length;
+  waterUniforms.uRippleCount.value=ripples.length;
 }
-function clearRipples(){ ripples.length=0; updateRippleUniforms(); }
+function clearRipples(){ ripples.length=0; updateRippleUniforms(); log('ripples cleared'); }
 
-// --- Rain ---
 let rainPoints, rainGeo;
 function initRain(){
-  const count=1800;
-  rainGeo = new THREE.BufferGeometry();
-  const pos = new Float32Array(count*3);
-  const vel = new Float32Array(count);
-  for(let i=0;i<count;i++){
-    pos[i*3]= (Math.random()-0.5)*500;
-    pos[i*3+1]= Math.random()*120 + 20;
-    pos[i*3+2]= (Math.random()-0.5)*500;
-    vel[i]= 20 + Math.random()*18;
-  }
+  const count=2000;
+  rainGeo=new THREE.BufferGeometry();
+  const pos=new Float32Array(count*3), vel=new Float32Array(count);
+  for(let i=0;i<count;i++){ pos[i*3]=(Math.random()-0.5)*600; pos[i*3+1]=Math.random()*130+20; pos[i*3+2]=(Math.random()-0.5)*600; vel[i]=22+Math.random()*20; }
   rainGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
   rainGeo.setAttribute('vel', new THREE.BufferAttribute(vel,1));
-  const rainMat = new THREE.PointsMaterial({ color:0x9ae8ff, size:0.35, transparent:true, opacity:0.55 });
-  rainPoints = new THREE.Points(rainGeo, rainMat);
-  rainPoints.visible=false;
-  scene.add(rainPoints);
+  const rainMat=new THREE.PointsMaterial({ color:0x9ae8ff, size:0.38, transparent:true, opacity:0.6 });
+  rainPoints=new THREE.Points(rainGeo, rainMat);
+  rainPoints.visible=false; scene.add(rainPoints);
 }
 initRain();
 function updateRain(dt){
-  if(!rainActive || !rainGeo) return;
-  const pos = rainGeo.attributes.position;
-  const vel = rainGeo.attributes.vel;
+  if(!rainActive||!rainGeo) return;
+  const pos=rainGeo.attributes.position, vel=rainGeo.attributes.vel;
   for(let i=0;i<pos.count;i++){
-    let y = pos.getY(i);
-    y -= vel.getX(i)*dt;
+    let y=pos.getY(i); y-=vel.getX(i)*dt;
     if(y < state.waterLevel){
-      const x = pos.getX(i), z = pos.getZ(i);
-      if(Math.random()<0.12) addRipple(x,z, 0.6+Math.random()*0.7);
-      y = 60 + Math.random()*50;
-      pos.setX(i, (Math.random()-0.5)*460);
-      pos.setZ(i, (Math.random()-0.5)*460);
+      const x=pos.getX(i), z=pos.getZ(i);
+      if(Math.random()<0.10) addRipple(x,z,0.6+Math.random()*0.7);
+      y=70+Math.random()*60;
+      pos.setX(i,(Math.random()-0.5)*580); pos.setZ(i,(Math.random()-0.5)*580);
     }
     pos.setY(i,y);
   }
   pos.needsUpdate=true;
 }
 
-// --- Interaction (raycast to water) ---
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-let isPointerDown=false;
-
+// raycast
+const raycaster=new THREE.Raycaster(); const pointer=new THREE.Vector2(); let isPointerDown=false;
 function onPointer(e){
-  const rect = renderer.domElement.getBoundingClientRect();
-  const x = (e.clientX ?? e.touches?.[0]?.clientX) - rect.left;
-  const y = (e.clientY ?? e.touches?.[0]?.clientY) - rect.top;
-  pointer.x = (x/rect.width)*2 -1;
-  pointer.y = -(y/rect.height)*2 +1;
+  const rect=renderer.domElement.getBoundingClientRect();
+  const cx=(e.clientX??e.touches?.[0]?.clientX)-rect.left;
+  const cy=(e.clientY??e.touches?.[0]?.clientY)-rect.top;
+  pointer.x=(cx/rect.width)*2-1; pointer.y=-(cy/rect.height)*2+1;
   raycaster.setFromCamera(pointer, camera);
-  const hits = raycaster.intersectObject(waterMesh);
+  // intersect both water layers
+  const hits=raycaster.intersectObjects([waterMesh, waterPhysical]);
   if(hits.length){
-    const p = hits[0].point;
-    addRipple(p.x, p.z, state.waveHeight*0.6 + 0.6);
-    // small splash buoy impulse
-    for(const b of buoys){
-      const d = Math.hypot(b.userData.base.x - p.x, b.userData.base.y - p.z);
-      if(d<12) b.userData.phase += 1.2;
-    }
+    const p=hits[0].point;
+    addRipple(p.x,p.z, state.waveHeight*0.7+0.6);
+    for(const b of buoys){ const d=Math.hypot(b.userData.base.x-p.x, b.userData.base.y-p.z); if(d<14) b.userData.phase+=1.2; }
   }
 }
-canvas.addEventListener('pointerdown', (e)=>{ isPointerDown=true; onPointer(e); canvas.setPointerCapture(e.pointerId); });
-canvas.addEventListener('pointermove', (e)=>{ if(isPointerDown && e.buttons) onPointer(e); });
+canvas.addEventListener('pointerdown', e=>{ isPointerDown=true; onPointer(e); try{canvas.setPointerCapture(e.pointerId);}catch{} });
+canvas.addEventListener('pointermove', e=>{ if(isPointerDown&&e.buttons) onPointer(e); });
 canvas.addEventListener('pointerup', ()=>{ isPointerDown=false; });
 
-// --- UI bindings ---
-const $ = id=>document.getElementById(id);
-function bindSlider(id, key, displayId, fmt=(v)=>v.toFixed(2), onChange=null){
-  const el=$(id), disp=$(displayId);
+// UI
+const $=id=>document.getElementById(id);
+function bindSlider(id,key,dispId,fmt=v=>v.toFixed(2),onChange=null){
+  const el=$(id), disp=$(dispId);
   el.addEventListener('input', ()=>{
-    const v=parseFloat(el.value);
-    state[key]=v;
-    disp.textContent=fmt(v);
-    if(onChange) onChange(v);
+    const v=parseFloat(el.value); state[key]=v; disp.textContent=fmt(v); if(onChange) onChange(v);
   });
 }
 bindSlider('waterLevel','waterLevel','waterLevelVal', v=>v.toFixed(2), v=>{
-  waterMesh.position.y=v;
-  waterUniforms.uWaterLevel.value=v;
+  waterMesh.position.y=v; waterPhysical.position.y=v-0.15; waterUniforms.uWaterLevel.value=v;
 });
 bindSlider('waveHeight','waveHeight','waveHeightVal', v=>v.toFixed(2), v=>{ waterUniforms.uWaveHeight.value=v; });
 bindSlider('wind','windSpeed','windVal', v=>v.toFixed(2), v=>{ waterUniforms.uWindSpeed.value=v; });
 bindSlider('chop','choppiness','chopVal', v=>v.toFixed(2), v=>{ waterUniforms.uChoppiness.value=v; });
 bindSlider('flow','flowSpeed','flowVal', v=>v.toFixed(2), v=>{ waterUniforms.uFlowSpeed.value=v; });
 bindSlider('islandSize','islandSize','islandSizeVal', v=>v.toFixed(2), v=>{
-  islandMC.scale.set(80*v,26*v,80*v);
-  waterUniforms.uIslandRadius.value = 32*v;
+  islandMC.scale.set(48*v,18*v,48*v); waterUniforms.uIslandRadius.value=26*v;
 });
 bindSlider('timeOfDay','timeOfDay','timeVal', v=>v.toFixed(2), v=>updateTimeOfDay(v));
-
-function updateTimeOfDay(t){
-  // t 0=night, 0.35=dawn, 0.62=day, 0.85=sunset, 1=night
-  let bg, fogCol, waterCol, deepCol, sunCol, sunInt, fogDens;
-  if(t<0.3){ // night to dawn
-    const k = t/0.3;
-    bg = new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x2a3a5a), k);
-    fogCol = new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x3a4a6a), k);
-    waterCol = new THREE.Color().lerpColors(new THREE.Color(0x0a1a2a), new THREE.Color(0x1a5a6a), k);
-    deepCol = new THREE.Color().lerpColors(new THREE.Color(0x050d14), new THREE.Color(0x0a2f3f), k);
-    sunInt = 0.2 + k*0.8;
-    fogDens = 0.012 - k*0.004;
-  } else if(t<0.7){ // day
-    const k = (t-0.3)/0.4;
-    bg = new THREE.Color().lerpColors(new THREE.Color(0x2a3a5a), new THREE.Color(0x7ec8e3), k);
-    fogCol = new THREE.Color().lerpColors(new THREE.Color(0x3a4a6a), new THREE.Color(0xa8d8ea), k);
-    waterCol = new THREE.Color().lerpColors(new THREE.Color(0x1a5a6a), new THREE.Color(0x1a8a9a), k);
-    deepCol = new THREE.Color().lerpColors(new THREE.Color(0x0a2f3f), new THREE.Color(0x0a4a5e), k);
-    sunInt = 1.0 + k*0.9;
-    fogDens = 0.008 - k*0.002;
-  } else { // sunset to night
-    const k = (t-0.7)/0.3;
-    bg = new THREE.Color().lerpColors(new THREE.Color(0x7ec8e3), new THREE.Color(0xff7e5f), k);
-    bg.lerp(new THREE.Color(0x1a0a2a), k*0.5);
-    fogCol = new THREE.Color().lerpColors(new THREE.Color(0xa8d8ea), new THREE.Color(0xff9a76), k);
-    waterCol = new THREE.Color().lerpColors(new THREE.Color(0x1a8a9a), new THREE.Color(0xff8a6a), k);
-    deepCol = new THREE.Color().lerpColors(new THREE.Color(0x0a4a5e), new THREE.Color(0x4a2a3a), k);
-    sunInt = 1.9 - k*1.5;
-    fogDens = 0.006 + k*0.006;
-  }
-  scene.background = bg;
-  scene.fog.color.copy(fogCol);
-  scene.fog.density = fogDens;
-  waterUniforms.uFogColor.value.copy(fogCol);
-  waterUniforms.uFogDensity.value = fogDens;
-  waterUniforms.uWaterColor.value.copy(waterCol);
-  waterUniforms.uDeepColor.value.copy(deepCol);
-  sun.intensity = sunInt;
-  // sun position around
-  const ang = t*Math.PI*2 - Math.PI*0.3;
-  sun.position.set(Math.cos(ang)*160, Math.sin(ang)*90 + 40, Math.sin(ang*0.7)*80);
-  waterUniforms.uSunDirection.value.copy(sun.position).normalize();
-  sunHelper.position.copy(sun.position).normalize().multiplyScalar(380);
-  floorMat.color.copy(deepCol).multiplyScalar(0.6);
-}
-updateTimeOfDay(state.timeOfDay);
-scene.background = new THREE.Color(0x0a2a3a);
-
-$('rainBtn').onclick = ()=>{
-  rainActive = !rainActive;
-  rainPoints.visible = rainActive;
-  $('rainBtn').textContent = rainActive ? 'STOP RAIN' : 'MAKE IT RAIN';
-  if(rainActive){
-    for(let i=0;i<6;i++) setTimeout(()=>addRipple((Math.random()-0.5)*120,(Math.random()-0.5)*120,1.1), i*120);
-  }
-};
-$('clearBtn').onclick = clearRipples;
-$('regenBtn').onclick = ()=>generateIsland();
-$('pauseBtn').onclick = ()=>{
-  paused = !paused;
-  $('pauseBtn').textContent = paused ? 'RESUME' : 'PAUSE';
-  if(!paused) clock.getDelta();
-};
-$('camBtn').onclick = ()=>{
-  camera.position.set(55,28,58);
-  controls.target.set(0,0,0);
-  controls.update();
-};
-
-addEventListener('keydown', (e)=>{
-  if(e.code==='KeyR'){ $('rainBtn').click(); }
-  if(e.code==='Space'){ e.preventDefault(); generateIsland(); }
-  if(e.code==='KeyC'){ clearRipples(); }
+bindSlider('opacity','opacity','opacityVal', v=>v.toFixed(2), v=>{
+  waterUniforms.uOpacity.value=v; waterPhysicalMat.opacity=v;
 });
 
-let lastFpsUpdate=0, frameCount=0;
-const fpsEl = document.getElementById('fps');
+function updateTimeOfDay(t){
+  let bg,fogCol,waterCol,deepCol,sunInt,fogDens;
+  if(t<0.3){
+    const k=t/0.3;
+    bg=new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x2a3a5a), k);
+    fogCol=new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x3a4a6a), k);
+    waterCol=new THREE.Color().lerpColors(new THREE.Color(0x0a1a2a), new THREE.Color(0x1a6a7a), k);
+    deepCol=new THREE.Color().lerpColors(new THREE.Color(0x050d14), new THREE.Color(0x0a2f3f), k);
+    sunInt=0.25+k*0.8; fogDens=0.008 - k*0.0045;
+  }else if(t<0.7){
+    const k=(t-0.3)/0.4;
+    bg=new THREE.Color().lerpColors(new THREE.Color(0x2a3a5a), new THREE.Color(0x7ec8e3), k);
+    fogCol=new THREE.Color().lerpColors(new THREE.Color(0x3a4a6a), new THREE.Color(0xa8d8ea), k);
+    waterCol=new THREE.Color().lerpColors(new THREE.Color(0x1a6a7a), new THREE.Color(0x2ab3c6), k);
+    deepCol=new THREE.Color().lerpColors(new THREE.Color(0x0a2f3f), new THREE.Color(0x0a4a5e), k);
+    sunInt=1.05+k*0.9; fogDens=0.0035 - k*0.0015;
+  }else{
+    const k=(t-0.7)/0.3;
+    bg=new THREE.Color().lerpColors(new THREE.Color(0x7ec8e3), new THREE.Color(0xff7e5f), k); bg.lerp(new THREE.Color(0x1a0a2a), k*0.5);
+    fogCol=new THREE.Color().lerpColors(new THREE.Color(0xa8d8ea), new THREE.Color(0xff9a76), k);
+    waterCol=new THREE.Color().lerpColors(new THREE.Color(0x2ab3c6), new THREE.Color(0xff8a6a), k);
+    deepCol=new THREE.Color().lerpColors(new THREE.Color(0x0a4a5e), new THREE.Color(0x4a2a3a), k);
+    sunInt=1.95 - k*1.5; fogDens=0.002 + k*0.005;
+  }
+  scene.background=bg; scene.fog.color.copy(fogCol); scene.fog.density=fogDens;
+  waterUniforms.uFogColor.value.copy(fogCol); waterUniforms.uFogDensity.value=fogDens;
+  waterUniforms.uWaterColor.value.copy(waterCol); waterUniforms.uDeepColor.value.copy(deepCol);
+  waterPhysicalMat.color.copy(waterCol);
+  sun.intensity=sunInt;
+  const ang=t*Math.PI*2 - Math.PI*0.3;
+  sun.position.set(Math.cos(ang)*160, Math.sin(ang)*90+45, Math.sin(ang*0.7)*80);
+  waterUniforms.uSunDirection.value.copy(sun.position).normalize();
+  sunHelper.position.copy(sun.position).normalize().multiplyScalar(420);
+  floorMat.color.copy(deepCol).multiplyScalar(0.55);
+}
+updateTimeOfDay(state.timeOfDay);
 
-// --- Animation loop ---
+$('rainBtn').onclick=()=>{
+  rainActive=!rainActive; rainPoints.visible=rainActive;
+  $('rainBtn').textContent=rainActive?'STOP RAIN':'MAKE IT RAIN';
+  if(rainActive){ for(let i=0;i<6;i++) setTimeout(()=>addRipple((Math.random()-0.5)*140,(Math.random()-0.5)*140,1.1), i*120); }
+};
+$('clearBtn').onclick=clearRipples;
+$('regenBtn').onclick=()=>generateIsland();
+$('pauseBtn').onclick=()=>{
+  paused=!paused; $('pauseBtn').textContent=paused?'RESUME':'PAUSE';
+  if(!paused) clock.getDelta();
+};
+$('camBtn').onclick=()=>{
+  camera.position.set(65,32,68); controls.target.set(0,-2,0); controls.update();
+};
+$('waterToggle').onclick=()=>{
+  if(waterMode==='shader'){
+    waterMode='physical'; waterMesh.visible=false; $('waterToggle').textContent='WATER: PHYSICAL';
+    log('switched to physical water (fallback)');
+  }else if(waterMode==='physical'){
+    waterMode='both'; waterMesh.visible=true; waterPhysical.visible=true; $('waterToggle').textContent='WATER: BOTH';
+    log('both waters visible');
+  }else{
+    waterMode='shader'; waterMesh.visible=true; waterPhysical.visible=true; $('waterToggle').textContent='WATER: SHADER';
+    log('shader water');
+  }
+};
+
+addEventListener('keydown', e=>{
+  if(e.code==='KeyR') $('rainBtn').click();
+  if(e.code==='Space'){ e.preventDefault(); generateIsland(); }
+  if(e.code==='KeyC') clearRipples();
+});
+
+const fpsEl=document.getElementById('fps');
+let lastFps=0, frames=0;
+
 function animate(){
   requestAnimationFrame(animate);
   if(paused){ renderer.render(scene,camera); return; }
+  const dt=Math.min(clock.getDelta(),0.05);
+  const elapsed=clock.getElapsedTime();
+  waterUniforms.uTime.value=elapsed;
+  waterUniforms.uIslandRadius.value=26*state.islandSize;
 
-  const dt = Math.min(clock.getDelta(), 0.05);
-  const elapsed = clock.getElapsedTime();
-
-  waterUniforms.uTime.value = elapsed;
-  waterUniforms.uIslandRadius.value = 32*state.islandSize;
-
-  // buoys bob
   for(const b of buoys){
-    const bx = b.userData.base.x, bz = b.userData.base.y;
-    const h = getWaveHeightCPU(bx,bz, elapsed);
-    b.position.set(bx, state.waterLevel + h + 0.35, bz);
-    b.rotation.x = Math.sin(elapsed*0.7 + b.userData.phase)*0.25 + getWaveHeightCPU(bx+0.5,bz,elapsed)*0.2;
-    b.rotation.z = Math.cos(elapsed*0.6 + b.userData.phase)*0.22;
-    b.rotation.y += b.userData.spin*dt;
+    const bx=b.userData.base.x, bz=b.userData.base.y;
+    const h=getWaveHeightCPU(bx,bz,elapsed);
+    b.position.set(bx, state.waterLevel + h + 0.4, bz);
+    b.rotation.x=Math.sin(elapsed*0.7 + b.userData.phase)*0.25 + getWaveHeightCPU(bx+0.5,bz,elapsed)*0.2;
+    b.rotation.z=Math.cos(elapsed*0.6 + b.userData.phase)*0.22;
+    b.rotation.y+=b.userData.spin*dt;
   }
 
   updateRain(dt);
   controls.update();
 
-  // fps
-  frameCount++;
-  if(elapsed - lastFpsUpdate > 0.5){
-    const fps = Math.round(frameCount/(elapsed-lastFpsUpdate)*0.5 + 30);
-    fpsEl.textContent = `LIVE SIMULATION • ${Math.min(120,fps)} FPS • ${ripples.length} RIPPLES`;
-    lastFpsUpdate=elapsed; frameCount=0;
+  frames++;
+  if(elapsed-lastFps>0.5){
+    const fps=Math.round(frames/(elapsed-lastFps));
+    fpsEl.textContent=`LIVE • ${fps} FPS • WATER ${waterMode.toUpperCase()} • ${ripples.length} RIPPLES`;
+    lastFps=elapsed; frames=0;
   }
-
   renderer.render(scene,camera);
 }
 animate();
 
-// --- Resize & visibility ---
 addEventListener('resize', ()=>{
   renderer.setSize(innerWidth,innerHeight);
-  camera.aspect = innerWidth/innerHeight;
+  camera.aspect=innerWidth/innerHeight;
   camera.updateProjectionMatrix();
 });
 document.addEventListener('visibilitychange', ()=>{
-  if(document.hidden) { paused=true; }
+  if(document.hidden) paused=true;
   else { paused=false; clock.getDelta(); $('pauseBtn').textContent='PAUSE'; }
 });
+
+log('ready — water should be visible. If not, click WATER toggle. Island tris: '+Math.round(islandMC.count/3));
 </script>
 </body>
 </html>
