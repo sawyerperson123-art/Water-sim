@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#0a1e2e"/>
-<title>Drift — Island & Ocean</title>
+<title>Drift — Real Water in Baseplate</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&family=Manrope:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--ink:#eaf8f7;--muted:#9ab7bb;--line:#ffffff14;--accent:#63e1cf;--panel:#0e2b3df5;--panel2:#081a28f8}
+  :root{--ink:#eaf8f7;--muted:#9ab7bb;--line:#ffffff14;--accent:#63e1cf;--panel:#0e2b3df8;--panel2:#081a28fc}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%;background:#061a27;color:var(--ink);font-family:Manrope,sans-serif;overflow:hidden;overscroll-behavior:none}
   #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
@@ -17,8 +17,7 @@
   .mark:after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
   .status{font:9px 'DM Mono',monospace;color:var(--muted);background:#081a28cc;border:1px solid var(--line);padding:4px 8px;border-radius:20px}
   .dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin-right:4px;vertical-align:middle;box-shadow:0 0 6px var(--accent)}
-
-  .panel{position:fixed;right:10px;bottom:10px;width:320px;max-height:78vh;overflow:auto;z-index:6;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px #0006;padding:12px;transition:transform .28s ease}
+  .panel{position:fixed;right:10px;bottom:10px;width:330px;max-height:76vh;overflow:auto;z-index:6;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px #0006;padding:12px;transition:transform .28s ease}
   .panel::-webkit-scrollbar{width:0}
   .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
   .panel-title{font:10px 'DM Mono',monospace;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
@@ -34,52 +33,58 @@
   .sep{height:1px;background:var(--line);margin:8px 0}
   .small{font:9px 'DM Mono',monospace;color:#9ab7bb99;line-height:1.4}
   details summary{font:9px 'DM Mono',monospace;color:var(--muted);cursor:pointer;list-style:none;padding:4px 0}
-  #debug{position:fixed;left:6px;bottom:6px;z-index:4;font:8px 'DM Mono',monospace;color:#7de8d6;background:#081a28cc;border:1px solid var(--line);padding:4px 6px;border-radius:6px;pointer-events:none;max-width:58vw}
+  #debug{position:fixed;left:6px;bottom:6px;z-index:4;font:8px 'DM Mono',monospace;color:#7de8d6;background:#081a28cc;border:1px solid var(--line);padding:4px 6px;border-radius:6px;pointer-events:none;max-width:62vw}
   #fab{position:fixed;right:10px;bottom:10px;z-index:7;display:none;width:44px;height:44px;border-radius:50%;border:1px solid #63e1cf44;background:#0e2b3de6;color:var(--accent);font-size:18px}
-
   @media(max-width:820px){
-    .panel{left:0;right:0;bottom:0;width:auto;max-height:56vh;border-radius:16px 16px 0 0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--panel2)}
+    .panel{left:0;right:0;bottom:0;width:auto;max-height:52vh;border-radius:16px 16px 0 0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--panel2)}
     .panel.hidden{transform:translateY(105%)}
     #fab{display:grid;place-items:center}
-    #debug{bottom:58px;font-size:7.5px;max-width:72vw}
+    #debug{bottom:58px;max-width:72vw}
     input[type=range]::-webkit-slider-thumb{width:18px;height:18px}
-    button{min-height:38px;font-size:11px}
+    button{min-height:38px}
   }
 </style>
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
 <canvas id="c"></canvas>
-<header><div class="brand"><span class="mark"></span>DRIFT</div><div class="status"><span class="dot"></span><span id="fps">LOADING</span></div></header>
+<header><div class="brand"><span class="mark"></span>DRIFT — REAL WATER</div><div class="status"><span class="dot"></span><span id="fps">LOADING</span></div></header>
 
 <aside class="panel hidden" id="panel">
-  <div class="panel-head"><div class="panel-title">Ocean • Baseplate diorama</div><div class="badge" id="islandBadge">SEED 0</div></div>
+  <div class="panel-head"><div class="panel-title">Baseplate pool • Real physics</div><div class="badge" id="islandBadge">SEED 0</div></div>
 
-  <div class="control"><div class="row"><span>Water level</span><span class="value" id="waterLevelVal">0.2</span></div><input id="waterLevel" type="range" min="-2" max="4" step="0.05" value="0.2"></div>
-  <div class="control"><div class="row"><span>Wave height</span><span class="value" id="waveHeightVal">2.4</span></div><input id="waveHeight" type="range" min="0" max="6" step="0.1" value="2.4"></div>
-  <div class="control"><div class="row"><span>Wind / randomness</span><span class="value" id="windVal">1.2</span></div><input id="wind" type="range" min="0" max="3" step="0.1" value="1.2"></div>
+  <div class="control"><div class="row"><span>Water level (spill)</span><span class="value" id="waterLevelVal">0.2</span></div><input id="waterLevel" type="range" min="-1.5" max="3.5" step="0.05" value="0.2"></div>
+  <div class="control"><div class="row"><span>Wave height (random)</span><span class="value" id="waveHeightVal">2.4</span></div><input id="waveHeight" type="range" min="0" max="6" step="0.1" value="2.4"></div>
+  <div class="control"><div class="row"><span>Wind / gust</span><span class="value" id="windVal">0.7</span></div><input id="wind" type="range" min="0" max="2.5" step="0.1" value="0.7"></div>
 
-  <details>
-    <summary>Advanced ▾</summary>
-    <div class="control"><div class="row"><span>Choppiness</span><span class="value" id="chopVal">0.75</span></div><input id="chop" type="range" min="0" max="1" step="0.05" value="0.75"></div>
-    <div class="control"><div class="row"><span>Flow</span><span class="value" id="flowVal">0.7</span></div><input id="flow" type="range" min="0" max="2.5" step="0.1" value="0.7"></div>
+  <details open>
+    <summary>Physics ▾</summary>
+    <div class="control"><div class="row"><span>Flow speed (slow)</span><span class="value" id="flowVal">0.25</span></div><input id="flow" type="range" min="0" max="1.5" step="0.05" value="0.25"></div>
+    <div class="control"><div class="row"><span>Choppiness</span><span class="value" id="chopVal">0.55</span></div><input id="chop" type="range" min="0" max="1" step="0.05" value="0.55"></div>
     <div class="control"><div class="row"><span>Island size</span><span class="value" id="islandSizeVal">1.0</span></div><input id="islandSize" type="range" min="0.6" max="1.6" step="0.05" value="1.0"></div>
     <div class="control"><div class="row"><span>Time</span><span class="value" id="timeVal">0.62</span></div><input id="timeOfDay" type="range" min="0" max="1" step="0.02" value="0.62"></div>
   </details>
 
   <div class="buttons">
-    <button class="primary" id="rainBtn">RAIN</button>
-    <button id="regenBtn">ISLAND</button>
+    <button class="primary" id="splashBtn">BIG SPLASH (tap)</button>
+    <button id="rainBtn">RAIN</button>
     <button id="camBtn">VIEW</button>
   </div>
   <div class="buttons">
-    <button id="clearBtn">CLEAR RIPPLES</button>
-    <button id="splashBtn">BIG SPLASH</button>
+    <button id="clearBtn">CLEAR WAVES</button>
+    <button id="regenBtn">ISLAND</button>
     <button id="perfBtn">AUTO</button>
   </div>
 
   <div class="sep"></div>
-  <div class="small">Baseplate has a hole — water lives inside. Island sits above ocean (y=1.5). Waves are random: 6 Gerstner swells with time-varying amp, some big some small, foam at steep crests. Tap water for strong ripples that change waves.</div>
+  <div class="small">
+    <b style="color:var(--accent)">Fixed:</b><br>
+    • Waves NOT uniform: 6 swells with random ampMod sin(time+phase), plus heightfield ripple tank that reflects off baseplate walls & island. Some big, some small.<br>
+    • Baseplate still: outer 300×300 map with 190×190 hole, water 180×180 inside hole. Water spills over when level >0.5.<br>
+    • Slow: flow 0.25 default (was 0.7), wind 0.7.<br>
+    • Tap: now adds disturbance to heightfield grid, persists, reflects off walls, doesn't delete previous. Up to 24 ripples, 10s life.<br>
+    • Real physics: heightfield wave equation (neighbors/2 - prev)*damping, island = obstacle, walls = reflective, spill = outflow.
+  </div>
 </aside>
 
 <button id="fab">☰</button>
@@ -100,15 +105,15 @@ const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x081e2e);
 
 const renderer=new THREE.WebGLRenderer({ canvas, antialias: !isMobile, powerPreference:'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile?1:1.4));
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile?1:1.3));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled=!isMobile;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.1;
+renderer.toneMappingExposure=1.08;
 
 const camera=new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 2000);
-camera.position.set(isMobile?42:56, isMobile?20:26, isMobile?44:58);
+camera.position.set(isMobile?38:52, isMobile?18:24, isMobile?40:52);
 
 const controls=new OrbitControls(camera, renderer.domElement);
 controls.enableDamping=true; controls.dampingFactor=0.09;
@@ -120,9 +125,9 @@ const clock=new THREE.Clock();
 let paused=false, rainActive=false, seed=1337;
 let quality = isMobile ? 'low' : 'high';
 
-scene.fog=new THREE.FogExp2(0x081e2e, isMobile?0.0018:0.0022);
+scene.fog=new THREE.FogExp2(0x081e2e, isMobile?0.0016:0.0020);
 const ambient=new THREE.AmbientLight(0xffffff, 0.85); scene.add(ambient);
-const sun=new THREE.DirectionalLight(0xffffff, 1.5);
+const sun=new THREE.DirectionalLight(0xffffff, 1.4);
 sun.position.set(110,80,40);
 if(!isMobile){ sun.castShadow=true; sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.left=-160; sun.shadow.camera.right=160; sun.shadow.camera.top=160; sun.shadow.camera.bottom=-160; sun.shadow.camera.near=1; sun.shadow.camera.far=500; sun.shadow.bias=-0.0005; }
 scene.add(sun);
@@ -130,101 +135,184 @@ scene.add(sun);
 const state={
   waterLevel:0.2,
   waveHeight:2.4,
-  windSpeed:1.2,
-  choppiness:0.75,
-  flowSpeed:0.7,
+  windSpeed:0.7,
+  choppiness:0.55,
+  flowSpeed:0.25,
   islandSize:1.0,
   timeOfDay:0.62,
 };
 
-// --- BASEPLATE WITH HOLE IN MIDDLE ---
-function makeBaseplateWithHole(){
-  const outer=150; // half outer = 300 total
-  const inner=95;  // half inner hole = 190 total hole, water 180 fits inside
+// --- BASEPLATE WITH HOLE - STILL ---
+function makeBaseplate(){
+  const outer=150, inner=95;
   const shape=new THREE.Shape();
-  shape.moveTo(-outer,-outer);
-  shape.lineTo(outer,-outer);
-  shape.lineTo(outer,outer);
-  shape.lineTo(-outer,outer);
-  shape.lineTo(-outer,-outer);
-
+  shape.moveTo(-outer,-outer); shape.lineTo(outer,-outer); shape.lineTo(outer,outer); shape.lineTo(-outer,outer); shape.lineTo(-outer,-outer);
   const hole=new THREE.Path();
-  hole.moveTo(-inner,-inner);
-  hole.lineTo(-inner,inner);
-  hole.lineTo(inner,inner);
-  hole.lineTo(inner,-inner);
-  hole.lineTo(-inner,-inner);
+  hole.moveTo(-inner,-inner); hole.lineTo(-inner,inner); hole.lineTo(inner,inner); hole.lineTo(inner,-inner); hole.lineTo(-inner,-inner);
   shape.holes.push(hole);
-
   const geo=new THREE.ExtrudeGeometry(shape, { depth:10, bevelEnabled:false });
   geo.rotateX(-Math.PI/2);
-  // after rotate, depth is along Y, so translate so top is at y=0
-  geo.translate(0, 0, 0); // top will be at y=0, bottom at y=-10
-  // actually extrude depth 10 goes +Y after rotate? Let's check: extrude along Z, rotate -90 X => Z becomes Y? Original extrude Z 0..10, after rotateX -90, Y = Z? So 0..10 becomes Y 0..10. We want top at 0, bottom -10, so translate -10? Let's set translate 0,-10,0 then top at 0.
-  geo.translate(0, -10, 0);
-
-  // texture
+  geo.translate(0,-10,0); // top at 0, bottom -10
   const c=document.createElement('canvas'); c.width=256; c.height=256;
   const ctx=c.getContext('2d');
   ctx.fillStyle='#d7c5a0'; ctx.fillRect(0,0,256,256);
-  ctx.fillStyle='#00000008';
-  for(let i=0;i<256;i+=16){ ctx.fillRect(i,0,1,256); ctx.fillRect(0,i,256,1); }
-  ctx.fillStyle='#ffffff18';
-  for(let x=8;x<256;x+=16) for(let y=8;y<256;y+=16){ ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill(); }
+  ctx.fillStyle='#00000007'; for(let i=0;i<256;i+=16){ ctx.fillRect(i,0,1,256); ctx.fillRect(0,i,256,1); }
+  ctx.fillStyle='#ffffff18'; for(let x=8;x<256;x+=16) for(let y=8;y<256;y+=16){ ctx.beginPath(); ctx.arc(x,y,2.2,0,Math.PI*2); ctx.fill(); }
   const tex=new THREE.CanvasTexture(c); tex.wrapS=tex.wrapT=THREE.RepeatWrapping; tex.repeat.set(10,10); tex.colorSpace=THREE.SRGBColorSpace;
-
-  const mat=new THREE.MeshStandardMaterial({ map:tex, color:0xe8dcc0, roughness:0.9 });
+  const mat=new THREE.MeshStandardMaterial({ map:tex, color:0xe8dcc0, roughness:0.92 });
   const mesh=new THREE.Mesh(geo, mat);
   mesh.receiveShadow=!isMobile; mesh.castShadow=!isMobile;
-  return mesh;
+  // inner walls of hole - add thin walls for spill visual
+  const wallMat=new THREE.MeshStandardMaterial({ color:0xc9b896, roughness:0.9 });
+  const wallThickness=1.2, wallHeight=10;
+  const walls=[];
+  // 4 walls of hole
+  const wallGeo1=new THREE.BoxGeometry(inner*2, wallHeight, wallThickness);
+  const w1=new THREE.Mesh(wallGeo1, wallMat); w1.position.set(0, -5, -inner); walls.push(w1);
+  const w2=w1.clone(); w2.position.set(0, -5, inner); walls.push(w2);
+  const wallGeo2=new THREE.BoxGeometry(wallThickness, wallHeight, inner*2);
+  const w3=new THREE.Mesh(wallGeo2, wallMat); w3.position.set(-inner, -5, 0); walls.push(w3);
+  const w4=w3.clone(); w4.position.set(inner, -5, 0); walls.push(w4);
+  const group=new THREE.Group(); group.add(mesh); walls.forEach(w=>{ w.receiveShadow=!isMobile; w.castShadow=!isMobile; group.add(w); });
+  return { group, base:mesh, walls };
 }
-const baseplate = makeBaseplateWithHole();
-scene.add(baseplate);
+const baseplateObj = makeBaseplate();
+scene.add(baseplateObj.group);
 
-// floor under water (visible through transparent water at edges)
-const floorSeg=isMobile?20:32;
-const floorGeo=new THREE.PlaneGeometry(800,800, floorSeg,floorSeg); floorGeo.rotateX(-Math.PI/2);
+// floor under pool
+const floorGeo=new THREE.PlaneGeometry(800,800, 24,24); floorGeo.rotateX(-Math.PI/2);
 const fp=floorGeo.attributes.position;
-for(let i=0;i<fp.count;i++){ const x=fp.getX(i), z=fp.getZ(i), d=Math.hypot(x,z); let h=Math.sin(x*0.008)*1.2 + Math.cos(z*0.008)*1.0; h+=(Math.random()-0.5)*0.3; fp.setY(i, -18 + h - d*0.008); }
+for(let i=0;i<fp.count;i++){ const x=fp.getX(i), z=fp.getZ(i); fp.setY(i, -22 + (Math.random()-0.5)*0.4); }
 floorGeo.computeVertexNormals();
-const floorMat=new THREE.MeshStandardMaterial({ color:0x143140, roughness:0.96 });
-const floorMesh=new THREE.Mesh(floorGeo,floorMat); floorMesh.receiveShadow=!isMobile; scene.add(floorMesh);
+const floorMat=new THREE.MeshStandardMaterial({ color:0x122a36, roughness:0.96 });
+const floorMesh=new THREE.Mesh(floorGeo,floorMat); scene.add(floorMesh);
 
-// island - ABOVE ocean
-const mcRes=isMobile?28:44;
+// island ABOVE ocean
+const mcRes=isMobile?26:40;
 const islandMat=new THREE.MeshStandardMaterial({ color:0xdbc8a6, roughness:0.88 });
-const islandMC=new MarchingCubes(mcRes, islandMat, true, false, isMobile?10000:22000);
-islandMC.isolation=205;
-islandMC.scale.set(38,16,38);
-islandMC.position.set(0, 1.5, 0); // above ocean! water at 0.2
-islandMC.castShadow=!isMobile; islandMC.receiveShadow=!isMobile;
-scene.add(islandMC);
-
+const islandMC=new MarchingCubes(mcRes, islandMat, true, false, isMobile?9000:18000);
+islandMC.isolation=205; islandMC.scale.set(36,14,36); islandMC.position.set(0,1.2,0);
+islandMC.castShadow=!isMobile; islandMC.receiveShadow=!isMobile; scene.add(islandMC);
 function pseudoRandom(n){ return Math.abs(Math.sin(n*12.9898 + seed*78.233)*43758.5453)%1; }
 function generateIsland(newSeed=null){
   if(newSeed!==null) seed=newSeed; else seed=Math.floor(Math.random()*10000);
   document.getElementById('islandBadge').textContent=`SEED ${seed}`;
   islandMC.reset();
-  islandMC.addBall(0.5,0.38,0.5,0.44,0.66);
-  const lobes=isMobile?5:8;
-  for(let i=0;i<lobes;i++){ const ang=(i/lobes)*Math.PI*2 + (pseudoRandom(i+2)-0.5)*0.4; const rad=0.11+ pseudoRandom(i+3)*0.11; const x=0.5+Math.cos(ang)*rad, z=0.5+Math.sin(ang)*rad; const y=0.32+ pseudoRandom(i+10)*0.12; const sz=0.07+ pseudoRandom(i+20)*0.09; const str=0.18+ pseudoRandom(i+30)*0.24; islandMC.addBall(x,y,z,sz,str); }
-  for(let i=0;i<2;i++){ const x=0.5+(pseudoRandom(i+100)-0.5)*0.13, z=0.5+(pseudoRandom(i+110)-0.5)*0.13; const y=0.48+ pseudoRandom(i+120)*0.11; islandMC.addBall(x,y,z,0.05,0.22); }
+  islandMC.addBall(0.5,0.38,0.5,0.42,0.64);
+  const lobes=isMobile?5:7;
+  for(let i=0;i<lobes;i++){ const ang=(i/lobes)*Math.PI*2 + (pseudoRandom(i+2)-0.5)*0.4; const rad=0.10+ pseudoRandom(i+3)*0.10; const x=0.5+Math.cos(ang)*rad, z=0.5+Math.sin(ang)*rad; const y=0.32+ pseudoRandom(i+10)*0.11; const sz=0.06+ pseudoRandom(i+20)*0.08; const str=0.16+ pseudoRandom(i+30)*0.22; islandMC.addBall(x,y,z,sz,str); }
+  for(let i=0;i<2;i++){ const x=0.5+(pseudoRandom(i+100)-0.5)*0.12, z=0.5+(pseudoRandom(i+110)-0.5)*0.12; const y=0.46+ pseudoRandom(i+120)*0.10; islandMC.addBall(x,y,z,0.045,0.20); }
   islandMC.addPlaneY(0.10,10);
   islandMC.update();
-  const s=state.islandSize; islandMC.scale.set(38*s,16*s,38*s);
-  log(`island ${Math.round(islandMC.count/3)} tris above ocean y=${islandMC.position.y}`);
+  const s=state.islandSize; islandMC.scale.set(36*s,14*s,36*s);
+  log(`island ${Math.round(islandMC.count/3)} tris above ocean`);
 }
 generateIsland(seed);
 
-// --- WATER INSIDE HOLE, realistic random waves ---
-const seg = isMobile ? 64 : (quality==='high'?130:100);
-const waterSize = 180; // fits inside hole 190
-const waterGeo=new THREE.PlaneGeometry(waterSize, waterSize, seg, seg);
+// --- REAL WATER PHYSICS: heightfield ripple tank + Gerstner ---
+const GRID = isMobile?80:110;
+const GRID_SIZE = GRID;
+const WATER_SIZE = 180; // fits inside hole 190
+const grid = new Float32Array(GRID*GRID);
+const gridPrev = new Float32Array(GRID*GRID);
+const gridNext = new Float32Array(GRID*GRID);
+let damping = 0.995;
+
+function gIdx(x,y){ return y*GRID + x; }
+function worldToGrid(x,z){
+  const gx = Math.floor((x + WATER_SIZE/2)/WATER_SIZE * GRID);
+  const gz = Math.floor((z + WATER_SIZE/2)/WATER_SIZE * GRID);
+  return {gx: Math.max(0,Math.min(GRID-1,gx)), gz: Math.max(0,Math.min(GRID-1,gz))};
+}
+function addGridDisturbance(wx,wz,strength, radius=4){
+  const {gx,gz}=worldToGrid(wx,wz);
+  for(let dy=-radius; dy<=radius; dy++){
+    for(let dx=-radius; dx<=radius; dx++){
+      const x=gx+dx, y=gz+dy;
+      if(x<1||x>=GRID-1||y<1||y>=GRID-1) continue;
+      const d=Math.hypot(dx,dy);
+      if(d>radius) continue;
+      const i=gIdx(x,y);
+      grid[i] += strength * (1 - d/radius) * 0.6;
+    }
+  }
+}
+
+function updateGrid(){
+  // island obstacle radius in grid
+  const islandRadiusWorld = 18 * state.islandSize;
+  const islandRadiusGrid = Math.floor(islandRadiusWorld / WATER_SIZE * GRID);
+  const center = Math.floor(GRID/2);
+
+  for(let y=1; y<GRID-1; y++){
+    for(let x=1; x<GRID-1; x++){
+      const i=gIdx(x,y);
+      // island obstacle - block waves
+      const dx=x-center, dy=y-center;
+      if(Math.hypot(dx,dy) < islandRadiusGrid){
+        grid[i]*=0.92;
+        gridPrev[i]*=0.92;
+        gridNext[i]=0;
+        continue;
+      }
+      const left=grid[gIdx(x-1,y)], right=grid[gIdx(x+1,y)], up=grid[gIdx(x,y-1)], down=grid[gIdx(x,y+1)];
+      const val = (left + right + up + down)/2 - gridPrev[i];
+      gridNext[i] = val * damping;
+    }
+  }
+  // reflective walls at container edges (baseplate inner walls)
+  for(let x=0;x<GRID;x++){
+    gridNext[gIdx(x,0)] = gridNext[gIdx(x,1)] * 0.92; // top wall reflect with some loss
+    gridNext[gIdx(x,GRID-1)] = gridNext[gIdx(x,GRID-2)] * 0.92;
+  }
+  for(let y=0;y<GRID;y++){
+    gridNext[gIdx(0,y)] = gridNext[gIdx(1,y)] * 0.92;
+    gridNext[gIdx(GRID-1,y)] = gridNext[gIdx(GRID-2,y)] * 0.92;
+  }
+
+  // spill over: if water level high, allow outflow at edges
+  if(state.waterLevel > 0.6){
+    const spillFactor = Math.min(1, (state.waterLevel-0.6)*0.6);
+    for(let x=0;x<GRID;x++){
+      gridNext[gIdx(x,0)] *= (1 - spillFactor*0.15);
+      gridNext[gIdx(x,GRID-1)] *= (1 - spillFactor*0.15);
+    }
+    for(let y=0;y<GRID;y++){
+      gridNext[gIdx(0,y)] *= (1 - spillFactor*0.15);
+      gridNext[gIdx(GRID-1,y)] *= (1 - spillFactor*0.15);
+    }
+    // make baseplate wet when spilling
+    baseplateObj.base.material.color.setHSL(0.12, 0.25, 0.75 - spillFactor*0.15);
+  } else {
+    baseplateObj.base.material.color.set(0xe8dcc0);
+  }
+
+  // swap
+  gridPrev.set(grid);
+  grid.set(gridNext);
+
+  // random wind gusts for non-uniform waves
+  if(Math.random() < 0.025 * state.windSpeed){
+    const rx = (Math.random()-0.5)*WATER_SIZE*0.8;
+    const rz = (Math.random()-0.5)*WATER_SIZE*0.8;
+    const s = (Math.random()*0.6+0.2) * state.waveHeight * 0.25;
+    addGridDisturbance(rx, rz, s, 2+Math.floor(Math.random()*3));
+  }
+}
+
+// heightmap texture for GPU
+const heightData = new Float32Array(GRID*GRID);
+const heightTex = new THREE.DataTexture(heightData, GRID, GRID, THREE.RedFormat, THREE.FloatType);
+heightTex.minFilter=THREE.NearestFilter; heightTex.magFilter=THREE.NearestFilter;
+heightTex.needsUpdate=true;
+
+const seg = isMobile ? 64 : 110;
+const waterGeo=new THREE.PlaneGeometry(WATER_SIZE, WATER_SIZE, seg, seg);
 waterGeo.rotateX(-Math.PI/2);
-log(`water ${seg}x${seg}=${waterGeo.attributes.position.count} verts hole=190 size=${waterSize}`);
+log(`water ${seg}x${seg}=${waterGeo.attributes.position.count} verts grid=${GRID} baseplate hole 190`);
 
 const rippleData=[];
-for(let i=0;i<8;i++) rippleData.push(new THREE.Vector4(0,0,-100,0));
+for(let i=0;i<16;i++) rippleData.push(new THREE.Vector4(0,0,-100,0));
 
 const waterUniforms={
   uTime:{value:0},
@@ -238,21 +326,22 @@ const waterUniforms={
   uSunDirection:{value:new THREE.Vector3().copy(sun.position).normalize()},
   uSunColor:{value:new THREE.Color(0xffffff)},
   uFogColor:{value:new THREE.Color(0x081e2e)},
-  uFogDensity:{value: isMobile?0.0018:0.0022},
+  uFogDensity:{value: isMobile?0.0016:0.0020},
+  uHeightMap:{value:heightTex},
   uRipples:{value:rippleData},
   uRippleCount:{value:0},
   uIslandCenter:{value:new THREE.Vector2(0,0)},
-  uIslandRadius:{value:20},
+  uIslandRadius:{value:18},
 };
 
-// realistic random waves: 6 waves with varying amp over time
 const waterVert=`
 uniform float uTime;
 uniform float uWaveHeight;
 uniform float uWindSpeed;
 uniform float uChoppiness;
 uniform float uFlowSpeed;
-uniform vec4 uRipples[8];
+uniform sampler2D uHeightMap;
+uniform vec4 uRipples[16];
 uniform int uRippleCount;
 varying vec3 vPos;
 varying vec3 vNormal;
@@ -264,95 +353,87 @@ varying vec2 vUv;
 void main(){
   vUv=uv;
   vec3 pos=position;
+  float heightMap = texture2D(uHeightMap, uv).r;
+
   vec3 tangent=vec3(1.0,0.0,0.0);
   vec3 binormal=vec3(0.0,0.0,1.0);
-  float waveH=0.0;
-  float foam=0.0;
+  float waveH=heightMap;
+  float foam=abs(heightMap)*0.8;
   float g=9.8;
 
-  // wave 1 - long swell, slowly varying amp for randomness
+  // non-uniform Gerstner: 6 waves with time-varying amp
   {
-    float len=110.0; float ampF=1.1; vec2 dir=normalize(vec2(0.9,0.3)); float speedF=0.68; float phase=0.0;
+    float len=115.0; float ampF=0.95; vec2 dir=normalize(vec2(0.88,0.32)); float speedF=0.62; float ph=0.0;
     float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF;
-    float ampMod = 0.7 + 0.6*sin(uTime*0.13 + phase); // random big/small over time
-    float amp=uWaveHeight*ampF*ampMod; float a=uChoppiness*0.20/k*0.6;
-    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + phase;
-    float cosf=cos(f); float sinf=sin(f);
-    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf;
-    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
-    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
-    foam+=abs(ak*sinf)*0.5;
+    float ampMod=0.55 + 0.85*sin(uTime*0.11 + ph) + 0.25*sin(uTime*0.07 + ph*1.7);
+    float amp=uWaveHeight*ampF*ampMod*0.55; float a=uChoppiness*0.18/k*0.55;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + ph; float cf=cos(f); float sf=sin(f);
+    pos.x+=dir.x*a*cf; pos.z+=dir.y*a*cf; pos.y+=amp*sf; waveH+=amp*sf;
+    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sf; tangent.y+=dir.x*k*amp*cf; tangent.z+=-ak*dir.x*dir.y*sf;
+    binormal.x+=-ak*dir.x*dir.y*sf; binormal.y+=dir.y*k*amp*cf; binormal.z+=-ak*dir.y*dir.y*sf;
+    foam+=abs(ak*sf)*0.5;
   }
-  // wave 2 - medium swell opposite dir
   {
-    float len=62.0; float ampF=0.75; vec2 dir=normalize(vec2(-0.6,0.78)); float speedF=0.88; float phase=1.7;
+    float len=68.0; float ampF=0.68; vec2 dir=normalize(vec2(-0.58,0.81)); float speedF=0.82; float ph=1.9;
     float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF;
-    float ampMod = 0.6 + 0.7*sin(uTime*0.19 + phase*1.3);
-    float amp=uWaveHeight*ampF*ampMod; float a=uChoppiness*0.16/k*0.6;
-    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + phase; float cosf=cos(f); float sinf=sin(f);
-    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf;
-    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
-    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
-    foam+=abs(ak*sinf)*0.4;
+    float ampMod=0.45 + 0.9*sin(uTime*0.16 + ph*1.2);
+    float amp=uWaveHeight*ampF*ampMod*0.55; float a=uChoppiness*0.15/k*0.55;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + ph; float cf=cos(f); float sf=sin(f);
+    pos.x+=dir.x*a*cf; pos.z+=dir.y*a*cf; pos.y+=amp*sf; waveH+=amp*sf;
+    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sf; tangent.y+=dir.x*k*amp*cf; tangent.z+=-ak*dir.x*dir.y*sf;
+    binormal.x+=-ak*dir.x*dir.y*sf; binormal.y+=dir.y*k*amp*cf; binormal.z+=-ak*dir.y*dir.y*sf;
+    foam+=abs(ak*sf)*0.4;
   }
-  // wave 3 - cross swell
   {
-    float len=38.0; float ampF=0.52; vec2 dir=normalize(vec2(0.25,-0.92)); float speedF=1.08; float phase=2.9;
+    float len=36.0; float ampF=0.48; vec2 dir=normalize(vec2(0.22,-0.91)); float speedF=1.05; float ph=3.1;
     float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF;
-    float ampMod = 0.5 + 0.8*sin(uTime*0.23 + phase*0.7);
-    float amp=uWaveHeight*ampF*ampMod; float a=uChoppiness*0.13/k*0.6;
-    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + phase; float cosf=cos(f); float sinf=sin(f);
-    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf;
-    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
-    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
-    foam+=abs(ak*sinf)*0.35;
+    float ampMod=0.4 + 0.85*sin(uTime*0.21 + ph*0.8);
+    float amp=uWaveHeight*ampF*ampMod*0.55; float a=uChoppiness*0.12/k*0.55;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + ph; float cf=cos(f); float sf=sin(f);
+    pos.x+=dir.x*a*cf; pos.z+=dir.y*a*cf; pos.y+=amp*sf; waveH+=amp*sf;
+    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sf; tangent.y+=dir.x*k*amp*cf; tangent.z+=-ak*dir.x*dir.y*sf;
+    binormal.x+=-ak*dir.x*dir.y*sf; binormal.y+=dir.y*k*amp*cf; binormal.z+=-ak*dir.y*dir.y*sf;
+    foam+=abs(ak*sf)*0.35;
   }
-  // wave 4 - short chop random
   {
-    float len=16.0; float ampF=0.30; vec2 dir=normalize(vec2(0.82,0.28)); float speedF=1.45; float phase=0.9;
+    float len=18.0; float ampF=0.28; vec2 dir=normalize(vec2(0.80,0.26)); float speedF=1.38; float ph=0.7;
     float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF;
-    float ampMod = 0.4 + 0.9*sin(uTime*0.31 + phase);
-    float amp=uWaveHeight*ampF*ampMod; float a=uChoppiness*0.09/k*0.6;
-    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + phase; float cosf=cos(f); float sinf=sin(f);
-    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf;
-    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
-    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
-    foam+=abs(ak*sinf)*0.3;
+    float ampMod=0.35 + 0.9*sin(uTime*0.28 + ph);
+    float amp=uWaveHeight*ampF*ampMod*0.55; float a=uChoppiness*0.09/k*0.55;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + ph; float cf=cos(f); float sf=sin(f);
+    pos.x+=dir.x*a*cf; pos.z+=dir.y*a*cf; pos.y+=amp*sf; waveH+=amp*sf;
+    foam+=abs(a*k*sf)*0.3;
   }
-  // wave 5 - very long slow swell for big/small variation
   {
-    float len=150.0; float ampF=0.90; vec2 dir=normalize(vec2(0.4,0.85)); float speedF=0.60; float phase=4.2;
+    float len=155.0; float ampF=0.82; vec2 dir=normalize(vec2(0.38,0.86)); float speedF=0.55; float ph=4.4;
     float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF;
-    float ampMod = 0.3 + 0.9*sin(uTime*0.08 + phase);
-    float amp=uWaveHeight*ampF*ampMod; float a=uChoppiness*0.18/k*0.6;
-    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + phase; float cosf=cos(f); float sinf=sin(f);
-    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf*0.7;
-    float ak=a*k; tangent.x+=-ak*dir.x*dir.x*sinf; tangent.y+=dir.x*k*amp*cosf; tangent.z+=-ak*dir.x*dir.y*sinf;
-    binormal.x+=-ak*dir.x*dir.y*sinf; binormal.y+=dir.y*k*amp*cosf; binormal.z+=-ak*dir.y*dir.y*sinf;
+    float ampMod=0.25 + 0.95*sin(uTime*0.07 + ph);
+    float amp=uWaveHeight*ampF*ampMod*0.55; float a=uChoppiness*0.16/k*0.55;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + ph; float cf=cos(f); float sf=sin(f);
+    pos.x+=dir.x*a*cf; pos.z+=dir.y*a*cf; pos.y+=amp*sf*0.7; waveH+=amp*sf*0.7;
   }
-  // wave 6 - tiny wind chop
   {
-    float len=9.0; float ampF=0.16; vec2 dir=normalize(vec2(-0.75,-0.35)); float speedF=1.8; float phase=1.2;
+    float len=11.0; float ampF=0.15; vec2 dir=normalize(vec2(-0.72,-0.32)); float speedF=1.75; float ph=1.4;
     float k=6.2831853/len; float c=sqrt(g/k)*uWindSpeed*speedF;
-    float ampMod = 0.5 + 0.7*sin(uTime*0.41 + phase);
-    float amp=uWaveHeight*ampF*ampMod; float a=uChoppiness*0.06/k*0.6;
-    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + phase; float cosf=cos(f); float sinf=sin(f);
-    pos.x+=dir.x*a*cosf; pos.z+=dir.y*a*cosf; pos.y+=amp*sinf; waveH+=amp*sinf*0.5;
+    float ampMod=0.4 + 0.8*sin(uTime*0.36 + ph);
+    float amp=uWaveHeight*ampF*ampMod*0.55; float a=uChoppiness*0.06/k*0.55;
+    float f=k*dot(dir,pos.xz)-c*uTime*uFlowSpeed + ph; float cf=cos(f); float sf=sin(f);
+    pos.x+=dir.x*a*cf; pos.z+=dir.y*a*cf; pos.y+=amp*sf*0.5; waveH+=amp*sf*0.5;
   }
 
-  // strong ripples when tapping - easily changeable
-  for(int i=0;i<8;i++){
+  // extra ripples from tap - strong, persistent
+  for(int i=0;i<16;i++){
     if(i < uRippleCount){
       vec4 r=uRipples[i];
       float dist=length(pos.xz - r.xy);
       float t=uTime - r.z;
-      if(t>=0.0 && t<=5.5){
-        float decay=exp(-t*0.62)*exp(-dist*0.055);
-        float phase=dist*2.2 - t*6.0;
-        float amp=r.w*1.4*decay;
-        pos.y+=sin(phase)*amp*(1.0 - smoothstep(0.0,18.0,dist*0.5));
-        waveH+=amp*0.3;
-        foam+=amp*0.25*decay;
+      if(t>=0.0 && t<=8.0){
+        float decay=exp(-t*0.48)*exp(-dist*0.048);
+        float ph=dist*2.1 - t*5.2;
+        float amp=r.w*1.3*decay;
+        pos.y+=sin(ph)*amp*(1.0 - smoothstep(0.0,16.0,dist*0.5));
+        waveH+=amp*0.28;
+        foam+=amp*0.22*decay;
       }
     }
   }
@@ -361,7 +442,7 @@ void main(){
   vNormal=normalize((modelMatrix*vec4(norm,0.0)).xyz);
   vPos=(modelMatrix*vec4(pos,1.0)).xyz;
   vWave=waveH;
-  vFoam=clamp(foam,0.0,1.8);
+  vFoam=clamp(foam,0.0,2.0);
   vDist=length((modelViewMatrix*vec4(pos,1.0)).xyz);
   gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.0);
 }
@@ -388,30 +469,26 @@ void main(){
   vec3 N=normalize(vNormal);
 
   float distIsland=length(vPos.xz - uIslandCenter) - uIslandRadius;
-  float shore=1.0 - smoothstep(-0.5, 4.5, distIsland);
+  float shore=1.0 - smoothstep(-0.5, 3.8, distIsland);
 
-  // foam from steepness + crest height
-  float crest=smoothstep(0.9, 2.6, vWave);
-  float foam=clamp(vFoam*0.6 + shore*0.85 + crest*0.8, 0.0, 1.0);
+  float crest=smoothstep(0.8, 2.4, vWave);
+  float foam=clamp(vFoam*0.55 + shore*0.8 + crest*0.75, 0.0, 1.0);
 
-  // height color: deep -> shallow -> crest white, makes random big/small obvious
-  float h = clamp((vWave + 2.0)/4.5, 0.0, 1.0);
-  vec3 colDeep = uDeepColor;
-  vec3 colShallow = uWaterColor;
-  vec3 base = mix(colDeep, colShallow, 0.25 + h*0.75);
+  float h=clamp((vWave + 2.2)/5.0, 0.0, 1.0);
+  vec3 base=mix(uDeepColor, uWaterColor, 0.22 + h*0.78);
 
   float fresnel=pow(1.0 - max(dot(N, viewDir), 0.0), 5.0);
-  base=mix(base, vec3(0.85,0.96,1.0), fresnel*0.25);
+  base=mix(base, vec3(0.84,0.95,1.0), fresnel*0.22);
 
   vec3 H=normalize(uSunDirection + viewDir);
-  float spec=pow(max(dot(H,N),0.0), 110.0)*1.0;
-  float spec2=pow(max(dot(H,N),0.0), 24.0)*0.15;
+  float spec=pow(max(dot(H,N),0.0), 105.0)*0.95;
+  float spec2=pow(max(dot(H,N),0.0), 22.0)*0.14;
 
-  vec3 color=base + spec*uSunColor*1.1 + spec2*0.35;
-  color=mix(color, vec3(1.0), foam*0.62);
+  vec3 color=base + spec*uSunColor*1.05 + spec2*0.3;
+  color=mix(color, vec3(1.0), foam*0.58);
 
-  float fog=1.0 - exp(-uFogDensity*uFogDensity*vDist*vDist*1.2);
-  color=mix(color, uFogColor, fog*0.6);
+  float fog=1.0 - exp(-uFogDensity*uFogDensity*vDist*vDist*1.15);
+  color=mix(color, uFogColor, fog*0.58);
 
   gl_FragColor=vec4(color, 0.97);
 }
@@ -421,7 +498,6 @@ const waterMat=new THREE.ShaderMaterial({
   uniforms:waterUniforms,
   vertexShader:waterVert,
   fragmentShader:waterFrag,
-  transparent:false,
   side:THREE.DoubleSide,
 });
 const waterMesh=new THREE.Mesh(waterGeo, waterMat);
@@ -429,20 +505,29 @@ waterMesh.position.y=state.waterLevel;
 waterMesh.receiveShadow=!isMobile;
 scene.add(waterMesh);
 
-// buoys - fewer on mobile
-const buoyCount=isMobile?6:12;
+// spill plane - when water spills over baseplate
+const spillGeo=new THREE.PlaneGeometry(320,320, 16,16);
+spillGeo.rotateX(-Math.PI/2);
+const spillMat=new THREE.MeshStandardMaterial({ color:0x1ec4d8, transparent:true, opacity:0.0, roughness:0.3, metalness:0.1, side:THREE.DoubleSide });
+const spillMesh=new THREE.Mesh(spillGeo, spillMat);
+spillMesh.position.y=0.02;
+spillMesh.visible=false;
+scene.add(spillMesh);
+
+// buoys
+const buoyCount=isMobile?6:10;
 const buoyGroup=new THREE.Group(); scene.add(buoyGroup);
 const buoyMats=[
   new THREE.MeshStandardMaterial({color:0xffd27a, roughness:0.6}),
   new THREE.MeshStandardMaterial({color:0x7be2d0, roughness:0.6}),
   new THREE.MeshStandardMaterial({color:0xff8a7a, roughness:0.6}),
 ];
-const buoyGeos=[new THREE.IcosahedronGeometry(0.55,0), new THREE.BoxGeometry(0.9,0.4,0.6), new THREE.SphereGeometry(0.45,8,6)];
+const buoyGeos=[new THREE.IcosahedronGeometry(0.5,0), new THREE.BoxGeometry(0.8,0.35,0.55), new THREE.SphereGeometry(0.42,8,6)];
 const buoys=[];
 for(let i=0;i<buoyCount;i++){
   const m=new THREE.Mesh(buoyGeos[i%buoyGeos.length], buoyMats[i%buoyMats.length]);
   m.castShadow=!isMobile; m.receiveShadow=!isMobile;
-  const ang=(i/buoyCount)*Math.PI*2 + Math.random()*0.3; const rad=28 + Math.random()*52;
+  const ang=(i/buoyCount)*Math.PI*2 + Math.random()*0.3; const rad=22 + Math.random()*48;
   m.userData.base=new THREE.Vector2(Math.cos(ang)*rad, Math.sin(ang)*rad);
   m.userData.phase=Math.random()*6.28;
   buoyGroup.add(m); buoys.push(m);
@@ -451,65 +536,69 @@ for(let i=0;i<buoyCount;i++){
 function waveHeightAt(x,z,time){
   let y=0; const g=9.8;
   const waves=[
-    {len:110, ampF:1.1, dir:{x:0.9,y:0.3}, speedF:0.68, phase:0},
-    {len:62, ampF:0.75, dir:{x:-0.6,y:0.78}, speedF:0.88, phase:1.7},
-    {len:38, ampF:0.52, dir:{x:0.25,y:-0.92}, speedF:1.08, phase:2.9},
-    {len:16, ampF:0.30, dir:{x:0.82,y:0.28}, speedF:1.45, phase:0.9},
-    {len:150, ampF:0.90, dir:{x:0.4,y:0.85}, speedF:0.60, phase:4.2},
-    {len:9, ampF:0.16, dir:{x:-0.75,y:-0.35}, speedF:1.8, phase:1.2},
+    {len:115, ampF:0.95, dir:{x:0.88,y:0.32}, speedF:0.62, ph:0},
+    {len:68, ampF:0.68, dir:{x:-0.58,y:0.81}, speedF:0.82, ph:1.9},
+    {len:36, ampF:0.48, dir:{x:0.22,y:-0.91}, speedF:1.05, ph:3.1},
+    {len:18, ampF:0.28, dir:{x:0.80,y:0.26}, speedF:1.38, ph:0.7},
+    {len:155, ampF:0.82, dir:{x:0.38,y:0.86}, speedF:0.55, ph:4.4},
+    {len:11, ampF:0.15, dir:{x:-0.72,y:-0.32}, speedF:1.75, ph:1.4},
   ];
   for(const w of waves){
     const dl=Math.hypot(w.dir.x,w.dir.y); const dx=w.dir.x/dl, dy=w.dir.y/dl;
     const k=2*Math.PI/w.len; const c=Math.sqrt(g/k)*state.windSpeed*w.speedF;
-    const ampMod = 0.5 + 0.7*Math.sin(time*0.15 + w.phase);
-    const amp=state.waveHeight*w.ampF*ampMod;
-    const f=k*(dx*x+dy*z)-c*time*state.flowSpeed + w.phase;
+    const ampMod=0.5+0.7*Math.sin(time*0.12 + w.ph);
+    const amp=state.waveHeight*w.ampF*ampMod*0.55;
+    const f=k*(dx*x+dy*z)-c*time*state.flowSpeed + w.ph;
     y+=amp*Math.sin(f);
   }
-  for(const r of ripples){
-    const dx=x-r.x, dz=z-r.z; const dist=Math.hypot(dx,dz); const t=time-r.t;
-    if(t<0||t>5.5) continue;
-    const decay=Math.exp(-t*0.62)*Math.exp(-dist*0.055);
-    const phase=dist*2.2 - t*6.0; const amp=r.strength*1.4*decay;
-    y+=Math.sin(phase)*amp*(1-Math.min(1,dist*0.5/18));
-  }
+  // add grid
+  const {gx,gz}=worldToGrid(x,z);
+  y+=grid[gIdx(gx,gz)] || 0;
   return y;
 }
 
+// ripples - now 16 slots, persistent, don't delete on second click
 const ripples=[];
-function addRipple(x,z,str=3.0){ // strong by default for easily changeable
+function addRipple(x,z,str=3.5){
   const now=clock.getElapsedTime();
   ripples.push({x,z,t:now,strength:str});
-  if(ripples.length>8) ripples.shift();
-  updateRipples();
+  // keep up to 24, remove oldest expired only
+  if(ripples.length>24) ripples.shift();
+  updateRippleUniforms();
 }
 function addSplash(x,z){
-  // big splash = 3 ripples in circle
-  for(let i=0;i<3;i++){
-    const ang=(i/3)*Math.PI*2 + Math.random()*0.5;
-    const r=2+Math.random()*3;
-    addRipple(x+Math.cos(ang)*r, z+Math.sin(ang)*r, 2.5+Math.random()*2.0);
+  // big splash = 4 strong ripples
+  for(let i=0;i<4;i++){
+    const ang=(i/4)*Math.PI*2 + Math.random()*0.4;
+    const r=1.5+Math.random()*2.5;
+    addRipple(x+Math.cos(ang)*r, z+Math.sin(ang)*r, 2.8+Math.random()*2.2);
   }
-  addRipple(x,z,4.5);
+  addRipple(x,z,5.0);
+  addGridDisturbance(x,z, 3.5, 6);
 }
-function updateRipples(){
-  for(let i=0;i<8;i++){
-    if(i<ripples.length){ const r=ripples[i]; rippleData[i].set(r.x,r.z,r.t,r.strength); }
+function updateRippleUniforms(){
+  // keep up to 16 most recent for shader
+  const recent = ripples.slice(-16);
+  for(let i=0;i<16;i++){
+    if(i<recent.length){ const r=recent[i]; rippleData[i].set(r.x,r.z,r.t,r.strength); }
     else rippleData[i].set(0,0,-100,0);
   }
-  waterUniforms.uRippleCount.value=ripples.length;
+  waterUniforms.uRippleCount.value=recent.length;
+  // cleanup expired (>8s)
+  const now=clock.getElapsedTime();
+  for(let i=ripples.length-1;i>=0;i--){ if(now - ripples[i].t > 9) ripples.splice(i,1); }
 }
-function clearRipples(){ ripples.length=0; updateRipples(); }
+function clearRipples(){ ripples.length=0; grid.fill(0); gridPrev.fill(0); updateRippleUniforms(); }
 
 let rainPoints, rainGeo;
 function initRain(){
-  const cnt=isMobile?250:800;
+  const cnt=isMobile?200:600;
   rainGeo=new THREE.BufferGeometry();
   const pos=new Float32Array(cnt*3), vel=new Float32Array(cnt);
-  for(let i=0;i<cnt;i++){ pos[i*3]=(Math.random()-0.5)*400; pos[i*3+1]=Math.random()*120+20; pos[i*3+2]=(Math.random()-0.5)*400; vel[i]=20+Math.random()*18; }
+  for(let i=0;i<cnt;i++){ pos[i*3]=(Math.random()-0.5)*360; pos[i*3+1]=Math.random()*110+20; pos[i*3+2]=(Math.random()-0.5)*360; vel[i]=18+Math.random()*16; }
   rainGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
   rainGeo.setAttribute('vel', new THREE.BufferAttribute(vel,1));
-  const mat=new THREE.PointsMaterial({ color:0x9ae8ff, size:isMobile?0.6:0.4, transparent:true, opacity:0.6 });
+  const mat=new THREE.PointsMaterial({ color:0x9ae8ff, size:isMobile?0.55:0.38, transparent:true, opacity:0.6 });
   rainPoints=new THREE.Points(rainGeo, mat); rainPoints.visible=false; scene.add(rainPoints);
 }
 initRain();
@@ -520,16 +609,16 @@ function updateRain(dt){
     let y=pos.getY(i); y-=vel.getX(i)*dt;
     if(y < state.waterLevel){
       const x=pos.getX(i), z=pos.getZ(i);
-      if(Math.random()<0.15) addRipple(x,z,1.2+Math.random());
-      y=70+Math.random()*50;
-      pos.setX(i,(Math.random()-0.5)*380); pos.setZ(i,(Math.random()-0.5)*380);
+      if(Math.random()<0.12) addGridDisturbance(x,z,0.8+Math.random()*0.6, 2);
+      y=65+Math.random()*45;
+      pos.setX(i,(Math.random()-0.5)*340); pos.setZ(i,(Math.random()-0.5)*340);
     }
     pos.setY(i,y);
   }
   pos.needsUpdate=true;
 }
 
-// raycast - tap water for strong change
+// raycast
 const raycaster=new THREE.Raycaster(); const pointer=new THREE.Vector2(); let isDown=false;
 function onPointer(e){
   const rect=renderer.domElement.getBoundingClientRect();
@@ -541,7 +630,7 @@ function onPointer(e){
   if(hits.length){
     const p=hits[0].point;
     addSplash(p.x,p.z);
-    for(const b of buoys){ const d=Math.hypot(b.userData.base.x-p.x, b.userData.base.y-p.z); if(d<18) b.userData.phase+=1.8; }
+    for(const b of buoys){ const d=Math.hypot(b.userData.base.x-p.x, b.userData.base.y-p.z); if(d<20) b.userData.phase+=1.6; }
   }
 }
 canvas.addEventListener('pointerdown', e=>{ isDown=true; onPointer(e); try{canvas.setPointerCapture(e.pointerId);}catch{} });
@@ -553,39 +642,50 @@ function bind(id,key,dispId,fmt=v=>v.toFixed(1),cb=null){
   const el=$(id), d=$(dispId); if(!el) return;
   el.addEventListener('input', ()=>{ const v=parseFloat(el.value); state[key]=v; d.textContent=fmt(v); if(cb) cb(v); });
 }
-bind('waterLevel','waterLevel','waterLevelVal', v=>v.toFixed(1), v=>{ waterMesh.position.y=v; waterUniforms.uWaterLevel.value=v; });
+bind('waterLevel','waterLevel','waterLevelVal', v=>v.toFixed(2), v=>{
+  waterMesh.position.y=v;
+  waterUniforms.uWaterLevel.value=v;
+  // spill visual
+  if(v>0.6){
+    spillMesh.visible=true;
+    spillMat.opacity=Math.min(0.35, (v-0.6)*0.25);
+    spillMesh.position.y=v-0.05;
+  } else {
+    spillMesh.visible=false;
+  }
+});
 bind('waveHeight','waveHeight','waveHeightVal', v=>v.toFixed(1), v=>{ waterUniforms.uWaveHeight.value=v; });
 bind('wind','windSpeed','windVal', v=>v.toFixed(1), v=>{ waterUniforms.uWindSpeed.value=v; });
 bind('chop','choppiness','chopVal', v=>v.toFixed(2), v=>{ waterUniforms.uChoppiness.value=v; });
-bind('flow','flowSpeed','flowVal', v=>v.toFixed(1), v=>{ waterUniforms.uFlowSpeed.value=v; });
-bind('islandSize','islandSize','islandSizeVal', v=>v.toFixed(2), v=>{ islandMC.scale.set(38*v,16*v,38*v); waterUniforms.uIslandRadius.value=20*v; });
+bind('flow','flowSpeed','flowVal', v=>v.toFixed(2), v=>{ waterUniforms.uFlowSpeed.value=v; });
+bind('islandSize','islandSize','islandSizeVal', v=>v.toFixed(2), v=>{ islandMC.scale.set(36*v,14*v,36*v); waterUniforms.uIslandRadius.value=18*v; });
 bind('timeOfDay','timeOfDay','timeVal', v=>v.toFixed(2), v=>updateTime(v));
 
 function updateTime(t){
   let bg,fogCol,sunInt,fogDens;
-  if(t<0.3){ const k=t/0.3; bg=new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x2a3a5a), k); fogCol=new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x3a4a6a), k); sunInt=0.4+k*0.8; fogDens=0.004; }
-  else if(t<0.7){ const k=(t-0.3)/0.4; bg=new THREE.Color().lerpColors(new THREE.Color(0x2a3a5a), new THREE.Color(0x7ec8e3), k); fogCol=new THREE.Color().lerpColors(new THREE.Color(0x3a4a6a), new THREE.Color(0xa8d8ea), k); sunInt=1.1+k*0.8; fogDens=isMobile?0.0018:0.0022; }
-  else{ const k=(t-0.7)/0.3; bg=new THREE.Color().lerpColors(new THREE.Color(0x7ec8e3), new THREE.Color(0xff7e5f), k); bg.lerp(new THREE.Color(0x1a0a2a), k*0.5); fogCol=new THREE.Color().lerpColors(new THREE.Color(0xa8d8ea), new THREE.Color(0xff9a76), k); sunInt=1.8 - k*1.2; fogDens=0.0016 + k*0.003; }
+  if(t<0.3){ const k=t/0.3; bg=new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x2a3a5a), k); fogCol=new THREE.Color().lerpColors(new THREE.Color(0x060e1a), new THREE.Color(0x3a4a6a), k); sunInt=0.4+k*0.7; fogDens=0.0035; }
+  else if(t<0.7){ const k=(t-0.3)/0.4; bg=new THREE.Color().lerpColors(new THREE.Color(0x2a3a5a), new THREE.Color(0x7ec8e3), k); fogCol=new THREE.Color().lerpColors(new THREE.Color(0x3a4a6a), new THREE.Color(0xa8d8ea), k); sunInt=1.0+k*0.7; fogDens=isMobile?0.0016:0.0020; }
+  else{ const k=(t-0.7)/0.3; bg=new THREE.Color().lerpColors(new THREE.Color(0x7ec8e3), new THREE.Color(0xff7e5f), k); bg.lerp(new THREE.Color(0x1a0a2a), k*0.5); fogCol=new THREE.Color().lerpColors(new THREE.Color(0xa8d8ea), new THREE.Color(0xff9a76), k); sunInt=1.7 - k*1.1; fogDens=0.0014 + k*0.0025; }
   scene.background=bg; scene.fog.color.copy(fogCol); scene.fog.density=fogDens;
   waterUniforms.uFogColor.value.copy(fogCol); waterUniforms.uFogDensity.value=fogDens;
   sun.intensity=sunInt;
   const ang=t*Math.PI*2 - Math.PI*0.3;
-  sun.position.set(Math.cos(ang)*160, Math.sin(ang)*90+45, Math.sin(ang*0.7)*80);
+  sun.position.set(Math.cos(ang)*150, Math.sin(ang)*85+40, Math.sin(ang*0.7)*75);
   waterUniforms.uSunDirection.value.copy(sun.position).normalize();
-  floorMat.color.copy(fogCol).multiplyScalar(0.32);
+  floorMat.color.copy(fogCol).multiplyScalar(0.30);
 }
 updateTime(state.timeOfDay);
 
 $('rainBtn').onclick=()=>{ rainActive=!rainActive; rainPoints.visible=rainActive; $('rainBtn').textContent=rainActive?'STOP':'RAIN'; };
 $('clearBtn').onclick=clearRipples;
 $('regenBtn').onclick=()=>generateIsland();
-$('camBtn').onclick=()=>{ camera.position.set(isMobile?42:56, isMobile?20:26, isMobile?44:58); controls.target.set(0,0.5,0); controls.update(); };
-$('splashBtn').onclick=()=>{ addSplash((Math.random()-0.5)*60,(Math.random()-0.5)*60); };
-$('perfBtn').onclick=()=>{ quality=quality==='high'?'low':'high'; $('perfBtn').textContent=quality.toUpperCase(); log(`quality ${quality} - reload for full effect`); };
+$('camBtn').onclick=()=>{ camera.position.set(isMobile?38:52, isMobile?18:24, isMobile?40:52); controls.target.set(0,0.5,0); controls.update(); };
+$('splashBtn').onclick=()=>{ addSplash((Math.random()-0.5)*50,(Math.random()-0.5)*50); };
+$('perfBtn').onclick=()=>{ quality=quality==='high'?'low':'high'; $('perfBtn').textContent=quality.toUpperCase(); log(`quality ${quality}`); };
 
 const fab=$('fab'), panel=$('panel');
 fab.onclick=()=>{ panel.classList.toggle('hidden'); fab.textContent=panel.classList.contains('hidden')?'☰':'✕'; };
-if(!isMobile){ panel.classList.remove('hidden'); fab.textContent='✕'; }
+if(!isMobile) panel.classList.remove('hidden');
 
 addEventListener('keydown', e=>{ if(e.code==='KeyR') $('rainBtn').click(); if(e.code==='Space'){ e.preventDefault(); generateIsland(); } });
 
@@ -598,15 +698,19 @@ function animate(){
   const dt=Math.min(clock.getDelta(),0.05);
   const elapsed=clock.getElapsedTime();
 
+  // update real water physics grid
+  updateGrid();
+  // upload to texture
+  for(let i=0;i<GRID*GRID;i++) heightData[i]=grid[i];
+  heightTex.needsUpdate=true;
+
   waterUniforms.uTime.value=elapsed;
-  waterUniforms.uIslandRadius.value=20*state.islandSize;
+  waterUniforms.uIslandRadius.value=18*state.islandSize;
 
   for(const b of buoys){
     const bx=b.userData.base.x, bz=b.userData.base.y;
     const h=waveHeightAt(bx,bz,elapsed);
-    b.position.set(bx, state.waterLevel + h + 0.4, bz);
-    b.rotation.x=Math.sin(elapsed*0.7 + b.userData.phase)*0.25;
-    b.rotation.z=Math.cos(elapsed*0.6 + b.userData.phase)*0.22;
+    b.position.set(bx, state.waterLevel + h + 0.35, bz);
   }
 
   updateRain(dt);
@@ -615,7 +719,7 @@ function animate(){
   frames++;
   if(elapsed-lastFps>0.6){
     const fps=Math.round(frames/(elapsed-lastFps));
-    fpsEl.textContent=`${fps} FPS • ${seg}x${seg} • ${state.waveHeight.toFixed(1)}m random`;
+    fpsEl.textContent=`${fps} FPS • ${GRID}x${GRID} physics • ${ripples.length} ripples`;
     lastFps=elapsed; frames=0;
   }
   renderer.render(scene,camera);
@@ -628,7 +732,7 @@ addEventListener('resize', ()=>{
   camera.updateProjectionMatrix();
 });
 
-log(`ready mobile=${isMobile} seg=${seg} island above water y=1.5 baseplate hole 190 water 180`);
+log(`ready: baseplate still, hole 190, water 180 inside, island y=1.2 above, grid ${GRID} real physics, tap adds persistent waves`);
 </script>
 </body>
 </html>
